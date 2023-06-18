@@ -26,7 +26,7 @@ jobs:
       run: dotnet restore ./FantaAstaServer.sln
       
     - name: Build
-      run: dotnet build ./FantaAstaServer.sln --c Release --no-restore
+      run: dotnet build ./FantaAstaServer.sln -c Release --no-restore
       
     - name: Test
       run: dotnet test -c Release --no-build
