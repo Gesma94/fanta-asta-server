@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FantaAstaServer.Controllers
 {
-    [Route("api/test/[controller]")]
+    [Route("api/test/")]
     public class TestController : Controller
     {
         [HttpGet]
