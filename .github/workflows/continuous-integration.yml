@@ -1,0 +1,43 @@
+name: Publish 🚀
+
+on:
+  push:
+    branches: [ "main" ]
+
+env:
+  DOTNET_VERSION: "6.x.x"
+  AZURE_WEBAPP_NAME: "ex-fantasta"
+  AZURE_WEBAPP_PACKAGE_PATH: "./publish"
+
+jobs:
+  Publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Restore
+      run: dotnet restore ./FantaAstaServer.sln
+      
+    - name: Build
+      run: dotnet build ./FantaAstaServer.sln --c Release --no-restore
+      
+    - name: Test
+      run: dotnet test -c Release --no-build
+
+    - name: Publish
+      run: dotnet publish ./FantaAstaServer.sln -c Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+      
+    - name: Deploy
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+        package: "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+      
