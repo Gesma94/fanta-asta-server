@@ -1,0 +1,22 @@
+﻿// Copyright (c) 2023 - Gesma94
+// This code is licensed under MIT license (see LICENSE for details)
+
+using FantaAstaServer.Services;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace FantaAstaServer.Tests.Tests.Services
+{
+    [TestClass]
+    public class JsonConsumerTests
+    {
+        [TestClass]
+        public class GetPlayerCatalog
+        {
+            [TestMethod]
+            public void InvalidPath()
+            {
+                Assert.ThrowsException<FileNotFoundException>(() => new JsonConsumer().GetPlayerCatalog("TotallyInvalidPath"));
+            }
+        }
+    }
+}
