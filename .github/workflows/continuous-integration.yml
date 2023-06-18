@@ -32,7 +32,7 @@ jobs:
       run: dotnet test -c Release --no-build
 
     - name: Publish
-      run: dotnet publish ./FantaAstaServer.sln -c Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+      run: dotnet publish ./FantaAstaServer/FantaAstaServer.csproj -c Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
       
     - name: Deploy
       uses: azure/webapps-deploy@v2
