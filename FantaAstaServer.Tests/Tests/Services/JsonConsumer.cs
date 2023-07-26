@@ -1,5 +1,5 @@
 ﻿// Copyright (c) 2023 - Gesma94
-// This code is licensed under MIT license (see LICENSE for details)
+// This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
 using FantaAstaServer.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

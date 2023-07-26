@@ -1,0 +1,9 @@
+[
+  {
+    "firstName": "Foo",
+    "lastName": "Bar",
+    "team": "MappoTeam",
+    "role": 2,
+    "quotation": 17
+  }
+]
