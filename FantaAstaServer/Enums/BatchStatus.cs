@@ -3,11 +3,10 @@
 
 namespace FantaAstaServer.Enums
 {
-    public enum Role
+    public enum BatchStatus
     {
-        GoalKeeper = 0,
-        Defender = 1,
-        Midfielder = 2,
-        Striker = 3
+        Starting,
+        Ongoing,
+        Finished
     }
 }

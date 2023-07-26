@@ -3,11 +3,12 @@
 
 namespace FantaAstaServer.Enums
 {
-    public enum Role
+    public enum AuctionStatus
     {
-        GoalKeeper = 0,
-        Defender = 1,
-        Midfielder = 2,
-        Striker = 3
+        Initialized,
+        InLobby,
+        Created,
+        Started,
+        Ended
     }
 }

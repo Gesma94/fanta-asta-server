@@ -3,11 +3,11 @@
 
 namespace FantaAstaServer.Enums
 {
-    public enum Role
+    public enum FootballerRole
     {
-        GoalKeeper = 0,
-        Defender = 1,
-        Midfielder = 2,
-        Striker = 3
+        Goalkeeper,
+        Defender,
+        Midfielder,
+        Striker
     }
 }
