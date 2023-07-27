@@ -3,7 +3,7 @@
 
 namespace FantaAstaServer.Models.Domain
 {
-    public class UserAuctionEntity
+    public class UserAuctionEntity : EntityBase
     {
         public int UserId { get; set; }
         public int AuctionId { get; set; }
