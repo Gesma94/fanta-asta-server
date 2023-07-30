@@ -10,6 +10,10 @@ namespace FantaAstaServer.Interfaces
     {
         IAuctionRepository Auctions { get; }
         IUserRepository Users { get; }
+        IBatchRepository Batches { get; }
+        IFootballerRepository Footballers { get; }
+        IOfferRepository Offers { get; }
+        IUserActionRepository UserActions { get; }
         Task<int> SaveChanges();
     }
 }
