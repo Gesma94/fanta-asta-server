@@ -1,10 +1,14 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
+using FantaAstaServer.Common.Constants;
 using FantaAstaServer.Interfaces;
+using FantaAstaServer.Interfaces.Services;
 using FantaAstaServer.Models.APIs;
+using FantaAstaServer.Models.Configurations;
 using FantaAstaServer.Models.Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading.Tasks;
 
@@ -13,14 +17,21 @@ namespace FantaAstaServer.Controllers
     [Route("v1/user/")]
     public class UserController : Controller
     {
+        private readonly IEmailSender _emailSender;
         private readonly IDbUnitOfWork _dbUnitOfWork;
+        private readonly IConfiguration _configuration;
 
 
-        public UserController(IDbUnitOfWork dbUnitOfWork) => _dbUnitOfWork = dbUnitOfWork;
+        public UserController(IConfiguration configuration, IEmailSender emailSender, IDbUnitOfWork dbUnitOfWork)
+            => (_configuration, _emailSender, _dbUnitOfWork) = (configuration, emailSender, dbUnitOfWork);
 
 
+        /// <summary>
+        /// Allows to register a new user in the system
+        /// </summary>
+        /// <param name="createUserDto"></param>
         [HttpGet]
-        [Route("create")]
+        [Route("register")]
         public async Task<IActionResult> Create(CreateUserDto createUserDto)
         {
             var newUserEntity = new UserEntity()
@@ -38,6 +49,29 @@ namespace FantaAstaServer.Controllers
             await _dbUnitOfWork.SaveChanges();
 
             return Ok("Connection OK");
+        }
+
+
+        [HttpGet]
+        [Route("request-reset-password")]
+        public IActionResult RequestResetPassword(ResetPasswordRequestDto resetPasswordRequestDto)
+        {
+            var smptConfig = _configuration.GetSection(Constants.SmptConfigKey).Get<SmtpConfig>();
+
+            try
+            {
+                var subject = "FantaAsta: Recovery your password";
+                var textBody = "Click here to reset your password";
+                var mimeMessage = _emailSender.CreateMimeMessage(smptConfig.Username, resetPasswordRequestDto.Email, subject, textBody);
+
+                _emailSender.SendSslEmail(smptConfig.Host, smptConfig.Username, smptConfig.Password, mimeMessage);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
