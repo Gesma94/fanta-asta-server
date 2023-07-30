@@ -11,7 +11,7 @@ namespace FantaAstaServer.Services.Repositories
 {
     public class GenericRepository<T> : IRepository<T> where T : EntityBase
     {
-        private readonly FantaAstaDbContext _fantaAstaDbContext;
+        protected readonly FantaAstaDbContext _fantaAstaDbContext;
 
 
         public GenericRepository(FantaAstaDbContext fantaAstaDbContext)

@@ -3,6 +3,8 @@
 
 using FantaAstaServer.Models.Domain;
 using FantaAstaServer.Interfaces.Repositories;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace FantaAstaServer.Services.Repositories
 {
@@ -10,6 +12,11 @@ namespace FantaAstaServer.Services.Repositories
     {
         public UserRepository(FantaAstaDbContext fantaAstaDbContext) : base(fantaAstaDbContext)
         {
+        }
+
+        public Task<UserEntity> GetByEmail(string email)
+        {
+            return _fantaAstaDbContext.Set<UserEntity>().AsNoTracking().FirstOrDefaultAsync(x => x.Email.Equals(email));
         }
     }
 }
