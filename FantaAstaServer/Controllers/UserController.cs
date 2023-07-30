@@ -52,9 +52,9 @@ namespace FantaAstaServer.Controllers
         }
 
 
-        [HttpGet]
+        [HttpPost]
         [Route("request-reset-password")]
-        public IActionResult RequestResetPassword(ResetPasswordRequestDto resetPasswordRequestDto)
+        public IActionResult RequestResetPassword([FromBody] ResetPasswordRequestDto resetPasswordRequestDto)
         {
             var smptConfig = _configuration.GetSection(Constants.SmtpConfigKey).Get<SmtpConfig>();
 
