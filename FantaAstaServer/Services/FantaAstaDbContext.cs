@@ -25,6 +25,7 @@ namespace FantaAstaServer.Services
                 x.Property(x => x.Id).HasColumnName("id");
                 x.Property(x => x.Email).HasColumnName("email").IsRequired();
                 x.Property(x => x.ResetPasswordGuid).HasColumnName("reset_password_guid");
+                x.Property(x => x.ResetPasswordTimeStamp).HasColumnName("reset_password_timestamp");
                 x.Property(x => x.Username).HasColumnName("username").IsRequired();
                 x.Property(x => x.Password).HasColumnName("password").IsRequired();
                 x.Property(x => x.CraetionDate).HasColumnName("creation_date").IsRequired();
