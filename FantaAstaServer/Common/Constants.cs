@@ -5,7 +5,7 @@ namespace FantaAstaServer.Common.Constants
 {
     public class Constants
     {
-        public const string SmptConfigKey = "smpt";
+        public const string SmtpConfigKey = "smtp";
         public const string PostgresqlConfigKey = "postgresql";
 
     }
