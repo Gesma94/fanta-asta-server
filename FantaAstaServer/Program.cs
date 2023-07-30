@@ -12,6 +12,7 @@ using FantaAstaServer.Interfaces;
 using Microsoft.Extensions.Configuration;
 using FantaAstaServer.Models.Configurations;
 using FantaAstaServer.Common.Constants;
+using FantaAstaServer.Interfaces.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,7 @@ builder.Services.AddTransient<IFootballerRepository, FootballerRepository>();
 builder.Services.AddTransient<IOfferRepository, OfferRepository>();
 builder.Services.AddTransient<IUserActionRepository, UserActionRepository>();
 builder.Services.AddTransient<IDbUnitOfWork, DbUnitOfWork>();
+builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
 var app = builder.Build();
 
