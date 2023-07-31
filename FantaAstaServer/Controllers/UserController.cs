@@ -54,15 +54,28 @@ namespace FantaAstaServer.Controllers
 
         [HttpPost]
         [Route("request-reset-password")]
-        public IActionResult RequestResetPassword([FromBody] ResetPasswordRequestDto resetPasswordRequestDto)
+        public async Task<IActionResult> RequestResetPassword([FromBody] ResetPasswordRequestDto resetPasswordRequestDto)
         {
+            var user = await _dbUnitOfWork.Users.GetByEmail(resetPasswordRequestDto.Email);
             var smptConfig = _configuration.GetSection(Constants.SmtpConfigKey).Get<SmtpConfig>();
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("user does not exist");
+            }
 
             try
             {
                 var subject = "FantaAsta: Recovery your password";
-                var textBody = "Click here to reset your password";
+                var textBody = "Click <a href=\"https://www.google.com\">here</a> to reset your password";
                 var mimeMessage = _emailSender.CreateMimeMessage(smptConfig.Username, resetPasswordRequestDto.Email, subject, textBody);
+
+                user.ResetPasswordGuid = Guid.NewGuid();
+                user.ResetPasswordTimeStamp = DateTime.UtcNow;
+                DateTime.SpecifyKind(user.ResetPasswordTimeStamp.Value, DateTimeKind.Utc);
+
+                _dbUnitOfWork.Users.Update(user);
+                await _dbUnitOfWork.SaveChanges();
 
                 _emailSender.SendSslEmail(smptConfig.Host, smptConfig.Username, smptConfig.Password, mimeMessage);
 

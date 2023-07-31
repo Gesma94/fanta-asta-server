@@ -27,7 +27,7 @@ namespace FantaAstaServer.Services
 
             mimeMessage.To.Add(MailboxAddress.Parse(toEmail));
             mimeMessage.From.Add(MailboxAddress.Parse(fromEmail));
-            mimeMessage.Body = new TextPart(TextFormat.Plain) { Text = bodyText };
+            mimeMessage.Body = new TextPart(TextFormat.Html) { Text = bodyText };
 
             return mimeMessage;
         }
