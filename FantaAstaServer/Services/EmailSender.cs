@@ -34,6 +34,26 @@ namespace FantaAstaServer.Services
 
         public void SendSslEmail(string host, string username, string password, MimeMessage mimeMessage)
         {
+            if (string.IsNullOrEmpty(host))
+            {
+                throw new ArgumentException("host cannot be null nor empty");
+            }
+
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentException("username cannot be null nor empty");
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                throw new ArgumentException("password cannot be null nor empty");
+            }
+
+            if (mimeMessage == null)
+            {
+                throw new ArgumentException("mime message cannot be null");
+            }
+
             using var smtp = new SmtpClient();
 
             smtp.Connect(host, 465, true);
