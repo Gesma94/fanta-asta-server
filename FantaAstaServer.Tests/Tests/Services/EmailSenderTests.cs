@@ -51,7 +51,7 @@ namespace FantaAstaServer.Tests.Tests.Services
                 if (mimeMessage.Body is TextPart textPart)
                 {
                     Assert.AreEqual("bodyText", textPart.Text);
-                    Assert.AreEqual("plain", textPart.ContentType.MediaSubtype);
+                    Assert.AreEqual("html", textPart.ContentType.MediaSubtype);
                 }
             }
         }
