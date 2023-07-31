@@ -55,5 +55,51 @@ namespace FantaAstaServer.Tests.Tests.Services
                 }
             }
         }
+
+        [TestClass]
+        public class SendSslEmail
+        {
+            [TestMethod]
+            public void EmptyHost_ThrowException()
+            {
+                Assert.ThrowsException<ArgumentException>(() => new EmailSender().SendSslEmail("", "irrelevant", "irrelevant", new MimeMessage()));
+            }
+
+            [TestMethod]
+            public void NullHost_ThrowException()
+            {
+                Assert.ThrowsException<ArgumentException>(() => new EmailSender().SendSslEmail(null, "irrelevant", "irrelevant", new MimeMessage()));
+            }
+
+            [TestMethod]
+            public void EmptyUsername_ThrowException()
+            {
+                Assert.ThrowsException<ArgumentException>(() => new EmailSender().SendSslEmail("irrelevant", "", "irrelevant", new MimeMessage()));
+            }
+
+            [TestMethod]
+            public void NullUsername_ThrowException()
+            {
+                Assert.ThrowsException<ArgumentException>(() => new EmailSender().SendSslEmail("irrelevant", null, "irrelevant", new MimeMessage()));
+            }
+
+            [TestMethod]
+            public void EmptyPassword_ThrowException()
+            {
+                Assert.ThrowsException<ArgumentException>(() => new EmailSender().SendSslEmail("irrelevant", "irrelevant", "", new MimeMessage()));
+            }
+
+            [TestMethod]
+            public void NullPassword_ThrowException()
+            {
+                Assert.ThrowsException<ArgumentException>(() => new EmailSender().SendSslEmail("irrelevant", "irrelevant", null, new MimeMessage()));
+            }
+
+            [TestMethod]
+            public void NullMimeMessage_ThrowException()
+            {
+                Assert.ThrowsException<ArgumentException>(() => new EmailSender().SendSslEmail("irrelevant", "irrelevant", "irrelevant", null));
+            }
+        }
     }
 }
