@@ -10,8 +10,8 @@ namespace FantaAstaServer.Models.Domain
         public string Username { get; set; }
         public string Password { get; set; }
         public string Email { get; set; }
-        public Guid ResetPasswordGuid { get; set; }
-        public DateTime ResetPasswordTimeStamp { get; set; }
+        public Guid? ResetPasswordGuid { get; set; }
+        public DateTime? ResetPasswordTimeStamp { get; set; }
         public DateTime CraetionDate { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public string FavouriteTeam { get; set; }
