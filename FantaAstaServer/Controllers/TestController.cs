@@ -2,18 +2,18 @@
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
 using FantaAstaServer.Common.Constants;
+using FantaAstaServer.Interfaces.Services;
 using FantaAstaServer.Models.Configurations;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace FantaAstaServer.Controllers
 {
     [Route("api/test/")]
     public class TestController : Controller
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfigOptions _configOptions;
 
-        public TestController(IConfiguration configuration) => _configuration = configuration;
+        public TestController(IConfigOptions configOptions) => _configOptions = configOptions;
 
 
         [HttpGet]
@@ -27,7 +27,7 @@ namespace FantaAstaServer.Controllers
         [Route("test-secret")]
         public IActionResult TestSecret()
         {
-            var postgreSqlConfig = _configuration.GetSection(Constants.PostgresqlConfigKey).Get<PostgreSqlConfig>();
+            var postgreSqlConfig = _configOptions.GetConfigProperty<PostgreSqlConfig>(Constants.PostgresqlConfigKey);
             return Ok(postgreSqlConfig.Server);
         }
     }
