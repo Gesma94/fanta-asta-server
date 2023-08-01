@@ -19,11 +19,11 @@ namespace FantaAstaServer.Controllers
     {
         private readonly IEmailSender _emailSender;
         private readonly IDbUnitOfWork _dbUnitOfWork;
-        private readonly IConfiguration _configuration;
+        private readonly IConfigOptions _configOptions;
 
 
-        public UserController(IConfiguration configuration, IEmailSender emailSender, IDbUnitOfWork dbUnitOfWork)
-            => (_configuration, _emailSender, _dbUnitOfWork) = (configuration, emailSender, dbUnitOfWork);
+        public UserController(IConfigOptions configOptions, IEmailSender emailSender, IDbUnitOfWork dbUnitOfWork)
+            => (_configOptions, _emailSender, _dbUnitOfWork) = (configOptions, emailSender, dbUnitOfWork);
 
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace FantaAstaServer.Controllers
         public async Task<IActionResult> RequestResetPassword([FromBody] ResetPasswordRequestDto resetPasswordRequestDto)
         {
             var user = await _dbUnitOfWork.Users.GetByEmail(resetPasswordRequestDto.Email);
-            var smptConfig = _configuration.GetSection(Constants.SmtpConfigKey).Get<SmtpConfig>();
+            var smptConfig = _configOptions.GetConfigProperty<SmtpConfig>(Constants.SmtpConfigKey);
 
             if (user == null)
             {
@@ -79,6 +79,70 @@ namespace FantaAstaServer.Controllers
 
                 _emailSender.SendSslEmail(smptConfig.Host, smptConfig.Username, smptConfig.Password, mimeMessage);
 
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromServices] IPasswordHasher passwordHasher, [FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            var user = await _dbUnitOfWork.Users.GetByEmail(resetPasswordDto.Email);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("user does not exist");
+            }
+
+            if (!user.ResetPasswordGuid.HasValue)
+            {
+                throw new InvalidOperationException("user has not request a new password");
+            }
+
+            if (!user.ResetPasswordTimeStamp.HasValue)
+            {
+                throw new InvalidOperationException("user has not request a new password");
+            }
+
+            var resetPasswordGuid = user.ResetPasswordGuid.Value;
+            var resetPasswordTimestamp = user.ResetPasswordTimeStamp.Value;
+
+            if (resetPasswordGuid.ToString() != resetPasswordDto.ResetPasswordGuid)
+            {
+                throw new InvalidOperationException("password guid missmatch");
+            }
+            
+            if ((DateTime.UtcNow - resetPasswordTimestamp).TotalHours > 2)
+            {
+                try
+                {
+                    user.ResetPasswordGuid = null;
+                    user.ResetPasswordTimeStamp = null;
+
+                    _dbUnitOfWork.Users.Update(user);
+                    await _dbUnitOfWork.SaveChanges();
+                }
+                catch (Exception)
+                {
+
+                }
+
+                throw new InvalidOperationException("user new password request has expired");
+            }
+
+            try
+            {
+                user.ResetPasswordGuid = null;
+                user.ResetPasswordTimeStamp = null;
+                user.Password = passwordHasher.ComputeHash(resetPasswordDto.NewPassword, user.Email);
+
+                _dbUnitOfWork.Users.Update(user);
+                await _dbUnitOfWork.SaveChanges();
+             
                 return Ok();
             }
             catch (Exception ex)

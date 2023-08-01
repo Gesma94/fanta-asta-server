@@ -39,6 +39,9 @@ builder.Services.AddTransient<IUserActionRepository, UserActionRepository>();
 builder.Services.AddTransient<IDbUnitOfWork, DbUnitOfWork>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
+builder.Services.AddSingleton<IConfigOptions, ConfigOptions>();
+builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
