@@ -20,20 +20,30 @@ namespace FantaAstaServer.Services
 
         public string ComputeHash(string password, string salt, string pepper = null, int? iterations = null)
         {
-            var passwordHasherConfig = _configOptions.GetConfigProperty<PasswordHasherConfig>(Constants.PasswordHasherConfigKey);
-            
-            pepper ??= passwordHasherConfig.Pepper;
-            iterations ??= passwordHasherConfig.Iterations;
+            if (password == null)
+            {
+                throw new ArgumentException("password to hash cannot be null");
+            }
+
+            if (salt == null)
+            {
+                throw new ArgumentException("salt value cannot be null");
+            }
 
             if (iterations <= 0)
             {
                 return password;
             }
 
-            using var sha256 = SHA512.Create();
+            var passwordHasherConfig = _configOptions.GetConfigProperty<PasswordHasherConfig>(Constants.PasswordHasherConfigKey);
+            
+            pepper ??= passwordHasherConfig.Pepper;
+            iterations ??= passwordHasherConfig.Iterations;
+
+            using var sha512 = SHA512.Create();
             var hashInput = $"{password}{salt}{pepper}";
             var byteValue = Encoding.UTF8.GetBytes(hashInput);
-            var byteHash = sha256.ComputeHash(byteValue);
+            var byteHash = sha512.ComputeHash(byteValue);
             var hash = Convert.ToBase64String(byteHash);
 
             return ComputeHash(hash, salt, pepper, iterations - 1);
