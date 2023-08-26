@@ -4,6 +4,8 @@
 using FantaAstaServer.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MimeKit;
+using System;
+using System.Linq;
 
 namespace FantaAstaServer.Tests.Tests.Services
 {

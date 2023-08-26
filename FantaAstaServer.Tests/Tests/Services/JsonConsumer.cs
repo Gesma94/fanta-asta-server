@@ -3,6 +3,7 @@
 
 using FantaAstaServer.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace FantaAstaServer.Tests.Tests.Services
 {

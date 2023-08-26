@@ -7,6 +7,7 @@ using FantaAstaServer.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System;
 
 namespace FantaAstaServer.Tests.Tests.Services
 {
@@ -22,19 +23,19 @@ namespace FantaAstaServer.Tests.Tests.Services
             [TestMethod]
             public void IterationsZero_PlainPassword()
             {
-                Assert.AreEqual("password", new PasswordHasher(null).ComputeHash("password", "irrelevant", iterations: 0));
+                Assert.AreEqual("password", new PasswordHasher(Options.Create<PasswordHasherConfig>(null)).ComputeHash("password", "irrelevant", iterations: 0));
             }
 
             [TestMethod]
             public void PasswordNull_ThrowException()
             {
-                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(null).ComputeHash(null, "irrelevant"));
+                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create<PasswordHasherConfig>(null)).ComputeHash(null, "irrelevant"));
             }
 
             [TestMethod]
             public void SaltNull_ThrowException()
             {
-                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(null).ComputeHash("irrelevant", null));
+                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create<PasswordHasherConfig>(null)).ComputeHash("irrelevant", null));
             }
 
             [TestMethod]

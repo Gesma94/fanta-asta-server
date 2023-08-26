@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using System;
 using System.Data.Common;
 using System.Diagnostics;
 using Testcontainers.PostgreSql;
@@ -22,7 +23,6 @@ namespace FantaAstaServer.Tests.Sources
         {
             var _postgreSqlBuilder = new PostgreSqlBuilder()
                 .WithUsername("Gesma")
-                //.WithPortBinding(5555, 5432)
                 .Build();
 
             _postgreSqlBuilder.StartAsync().Wait();
