@@ -5,17 +5,17 @@ using FantaAstaServer.Interfaces.Services;
 using System.Text;
 using System;
 using FantaAstaServer.Models.Configurations;
-using FantaAstaServer.Common.Constants;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Options;
 
 namespace FantaAstaServer.Services
 {
     public class PasswordHasher : IPasswordHasher
     {
-        private readonly IConfigOptions _configOptions;
+        private readonly PasswordHasherConfig _passwordHasherConfig;
 
 
-        public PasswordHasher(IConfigOptions configOptions) => _configOptions = configOptions;
+        public PasswordHasher(IOptions<PasswordHasherConfig> passwordHasherConfig) => _passwordHasherConfig = passwordHasherConfig.Value;
 
 
         public string ComputeHash(string password, string salt, string pepper = null, int? iterations = null)
@@ -35,10 +35,9 @@ namespace FantaAstaServer.Services
                 return password;
             }
 
-            var passwordHasherConfig = _configOptions.GetConfigProperty<PasswordHasherConfig>(Constants.PasswordHasherConfigKey);
             
-            pepper ??= passwordHasherConfig.Pepper;
-            iterations ??= passwordHasherConfig.Iterations;
+            pepper ??= _passwordHasherConfig.Pepper;
+            iterations ??= _passwordHasherConfig.Iterations;
 
             using var sha512 = SHA512.Create();
             var hashInput = $"{password}{salt}{pepper}";

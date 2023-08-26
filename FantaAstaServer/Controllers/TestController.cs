@@ -1,19 +1,21 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Common.Constants;
-using FantaAstaServer.Interfaces.Services;
 using FantaAstaServer.Models.Configurations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace FantaAstaServer.Controllers
 {
     [Route("api/test/")]
     public class TestController : Controller
     {
-        private readonly IConfigOptions _configOptions;
+        private readonly PostgreSqlConfig _postgreSqlConfig;
 
-        public TestController(IConfigOptions configOptions) => _configOptions = configOptions;
+
+        public TestController(IOptions<PostgreSqlConfig> postgreSqlConfig)
+            => _postgreSqlConfig = postgreSqlConfig.Value;
 
 
         [HttpGet]
@@ -24,11 +26,18 @@ namespace FantaAstaServer.Controllers
         }
 
         [HttpGet]
+        [Route("ping-auth")]
+        [Authorize]
+        public IActionResult PingAuthorized()
+        {
+            return Ok("Connection OK");
+        }
+
+        [HttpGet]
         [Route("test-secret")]
         public IActionResult TestSecret()
         {
-            var postgreSqlConfig = _configOptions.GetConfigProperty<PostgreSqlConfig>(Constants.PostgresqlConfigKey);
-            return Ok(postgreSqlConfig.Server);
+            return Ok(_postgreSqlConfig.Server);
         }
     }
 }
