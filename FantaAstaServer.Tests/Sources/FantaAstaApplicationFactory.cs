@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Models.Configurations;
+using FantaAstaServer.Models.Options;
 using FantaAstaServer.Tests.Properties;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -45,7 +45,7 @@ namespace FantaAstaServer.Tests.Sources
             
             builder.ConfigureTestServices(services =>
             {
-                services.PostConfigure<PostgreSqlConfig>(config => {
+                services.PostConfigure<PostgreSqlOptions>(config => {
 
                     config.Port = npgsqlConnectionStringBuilder.Port;
                     config.Server = npgsqlConnectionStringBuilder.Host;

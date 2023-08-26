@@ -3,9 +3,9 @@
 
 using Npgsql;
 
-namespace FantaAstaServer.Models.Configurations
+namespace FantaAstaServer.Models.Options
 {
-    public class PostgreSqlConfig
+    public class PostgreSqlOptions
     {
         public int Port { get; set; }
         public string Id { get; set; }

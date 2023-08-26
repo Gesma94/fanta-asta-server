@@ -10,7 +10,7 @@ using FantaAstaServer.Services.Repositories;
 using FantaAstaServer.Interfaces.Repositories;
 using FantaAstaServer.Interfaces;
 using Microsoft.Extensions.Configuration;
-using FantaAstaServer.Models.Configurations;
+using FantaAstaServer.Models.Options;
 using FantaAstaServer.Common.Constants;
 using FantaAstaServer.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -33,9 +33,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 // Add options services
-builder.Services.AddOptions<SmtpConfig>().BindConfiguration(Constants.SmtpConfigKey);
-builder.Services.AddOptions<PostgreSqlConfig>().BindConfiguration(Constants.PostgresqlConfigKey);
-builder.Services.AddOptions<PasswordHasherConfig>().BindConfiguration(Constants.PasswordHasherConfigKey);
+builder.Services.AddOptions<SmtpOptions>().BindConfiguration(Constants.SmtpConfigKey);
+builder.Services.AddOptions<PostgreSqlOptions>().BindConfiguration(Constants.PostgresqlConfigKey);
+builder.Services.AddOptions<PasswordHasherOptions>().BindConfiguration(Constants.PasswordHasherConfigKey);
 
 // Add services to the container.
 

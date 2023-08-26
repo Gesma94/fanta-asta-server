@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Models.Configurations;
+using FantaAstaServer.Models.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -11,10 +11,10 @@ namespace FantaAstaServer.Controllers
     [Route("api/test/")]
     public class TestController : Controller
     {
-        private readonly PostgreSqlConfig _postgreSqlConfig;
+        private readonly PostgreSqlOptions _postgreSqlConfig;
 
 
-        public TestController(IOptions<PostgreSqlConfig> postgreSqlConfig)
+        public TestController(IOptions<PostgreSqlOptions> postgreSqlConfig)
             => _postgreSqlConfig = postgreSqlConfig.Value;
 
 

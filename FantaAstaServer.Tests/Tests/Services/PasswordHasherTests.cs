@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Models.Configurations;
+using FantaAstaServer.Models.Options;
 using FantaAstaServer.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -28,25 +28,25 @@ namespace FantaAstaServer.Tests.Tests.Services
             [TestMethod]
             public void NullOptions_ThrowException()
             {
-                Assert.ThrowsException<ArgumentNullException>(() => new PasswordHasher(Options.Create<PasswordHasherConfig>(null)));
+                Assert.ThrowsException<ArgumentNullException>(() => new PasswordHasher(Options.Create<PasswordHasherOptions>(null)));
             }
 
             [TestMethod]
             public void IterationsZero_PlainPassword()
             {
-                Assert.AreEqual("password", new PasswordHasher(Options.Create(new PasswordHasherConfig())).ComputeHash("password", "irrelevant", iterations: 0));
+                Assert.AreEqual("password", new PasswordHasher(Options.Create(new PasswordHasherOptions())).ComputeHash("password", "irrelevant", iterations: 0));
             }
 
             [TestMethod]
             public void PasswordNull_ThrowException()
             {
-                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create(new PasswordHasherConfig())).ComputeHash(null, "irrelevant"));
+                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create(new PasswordHasherOptions())).ComputeHash(null, "irrelevant"));
             }
 
             [TestMethod]
             public void SaltNull_ThrowException()
             {
-                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create(new PasswordHasherConfig())).ComputeHash("irrelevant", null));
+                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create(new PasswordHasherOptions())).ComputeHash("irrelevant", null));
             }
 
             [TestMethod]
@@ -55,11 +55,11 @@ namespace FantaAstaServer.Tests.Tests.Services
             [DataRow(3, "Zg3MI5MiV8d+81qrlViNIW7jfX8qTpsdvqJxMgWbQuWKT6eL33tQbtYPeOwKevF5WvOzoAdctn8jni71qjv4tw==")]
             public void SameInputsIncreasingIterations_ExpectedOutput(int iterations, string expectedOutput)
             {
-                var configOptions = Mock.Of<IOptions<PasswordHasherConfig>>();
+                var configOptions = Mock.Of<IOptions<PasswordHasherOptions>>();
 
                 Mock.Get(configOptions)
                     .SetupGet(x => x.Value)
-                    .Returns(new PasswordHasherConfig() { Iterations = iterations, Pepper = _pepper });
+                    .Returns(new PasswordHasherOptions() { Iterations = iterations, Pepper = _pepper });
 
                 Assert.AreEqual(expectedOutput, new PasswordHasher(configOptions).ComputeHash("password", "salt"));
             }
@@ -69,11 +69,11 @@ namespace FantaAstaServer.Tests.Tests.Services
             [DataRow("salt2", "7iOoEGXyJN1cD2RF6pKGDm1rllBuRAfSov1VqVp/g8QUOgJmhK32mngHfhZECtrwfm9fC5cEAiLixCPoUgZNSQ==")]
             public void SamePasswordDifferentSalt_DifferentHashedPassword(string salt, string expectedOutput)
             {
-                var configOptions = Mock.Of<IOptions<PasswordHasherConfig>>();
+                var configOptions = Mock.Of<IOptions<PasswordHasherOptions>>();
 
                 Mock.Get(configOptions)
                     .SetupGet(x => x.Value)
-                    .Returns(new PasswordHasherConfig() { Iterations = _iterations, Pepper = _pepper });
+                    .Returns(new PasswordHasherOptions() { Iterations = _iterations, Pepper = _pepper });
 
                 Assert.AreEqual(expectedOutput, new PasswordHasher(configOptions).ComputeHash("password", salt));
             }
@@ -81,11 +81,11 @@ namespace FantaAstaServer.Tests.Tests.Services
             [TestMethod]
             public void SamePasswordSameSalt_SameHashedPassword()
             {
-                var configOptions = Mock.Of<IOptions<PasswordHasherConfig>>();
+                var configOptions = Mock.Of<IOptions<PasswordHasherOptions>>();
 
                 Mock.Get(configOptions)
                     .SetupGet(x => x.Value)
-                    .Returns(new PasswordHasherConfig() { Iterations = _iterations, Pepper = _pepper });
+                    .Returns(new PasswordHasherOptions() { Iterations = _iterations, Pepper = _pepper });
 
                 var hashedPasswordOne = new PasswordHasher(configOptions).ComputeHash("password", "salt");
                 var hashedPasswordTwo = new PasswordHasher(configOptions).ComputeHash("password", "salt");
@@ -96,11 +96,11 @@ namespace FantaAstaServer.Tests.Tests.Services
             [TestMethod]
             public void EmptyPassword_ExpectedOutput()
             {
-                var configOptions = Mock.Of<IOptions<PasswordHasherConfig>>();
+                var configOptions = Mock.Of<IOptions<PasswordHasherOptions>>();
 
                 Mock.Get(configOptions)
                     .SetupGet(x => x.Value)
-                    .Returns(new PasswordHasherConfig() { Iterations = _iterations, Pepper = _pepper });
+                    .Returns(new PasswordHasherOptions() { Iterations = _iterations, Pepper = _pepper });
 
                 Assert.AreEqual("N2BHpP+pLR0Ala+c93BF0zO2P1ud8J3yO5zm7GGEcKv53IKEbaOUkxLQ1Ve3rKVArKNQuvREH7Q8vdnWs/lG9g==", new PasswordHasher(configOptions).ComputeHash("", "salt"));
             }

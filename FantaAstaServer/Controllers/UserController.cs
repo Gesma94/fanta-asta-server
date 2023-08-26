@@ -5,7 +5,7 @@ using FantaAstaServer.Common.Constants;
 using FantaAstaServer.Interfaces;
 using FantaAstaServer.Interfaces.Services;
 using FantaAstaServer.Models.APIs;
-using FantaAstaServer.Models.Configurations;
+using FantaAstaServer.Models.Options;
 using FantaAstaServer.Models.Domain;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -75,7 +75,7 @@ namespace FantaAstaServer.Controllers
 
         [HttpPost]
         [Route("request-reset-password")]
-        public async Task<IActionResult> RequestResetPassword([FromServices] IOptions<SmtpConfig> smtpOptionsWrapper, ResetPasswordRequestDto resetPasswordRequestDto)
+        public async Task<IActionResult> RequestResetPassword([FromServices] IOptions<SmtpOptions> smtpOptionsWrapper, ResetPasswordRequestDto resetPasswordRequestDto)
         {
             var smtpOptions = smtpOptionsWrapper.Value;
             var user = await _dbUnitOfWork.Users.GetByEmail(resetPasswordRequestDto.Email);

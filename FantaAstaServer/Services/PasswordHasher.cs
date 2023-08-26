@@ -4,7 +4,7 @@
 using FantaAstaServer.Interfaces.Services;
 using System.Text;
 using System;
-using FantaAstaServer.Models.Configurations;
+using FantaAstaServer.Models.Options;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Options;
 
@@ -12,10 +12,10 @@ namespace FantaAstaServer.Services
 {
     public class PasswordHasher : IPasswordHasher
     {
-        private readonly PasswordHasherConfig _passwordHasherConfig;
+        private readonly PasswordHasherOptions _passwordHasherConfig;
 
 
-        public PasswordHasher(IOptions<PasswordHasherConfig> passwordHasherConfig)
+        public PasswordHasher(IOptions<PasswordHasherOptions> passwordHasherConfig)
         {
             _passwordHasherConfig = passwordHasherConfig?.Value ?? throw new ArgumentNullException(nameof(passwordHasherConfig));
         }

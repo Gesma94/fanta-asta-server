@@ -2,7 +2,7 @@
 using FantaAstaServer.Controllers;
 using FantaAstaServer.Interfaces.Services;
 using FantaAstaServer.Models.APIs;
-using FantaAstaServer.Models.Configurations;
+using FantaAstaServer.Models.Options;
 using FantaAstaServer.Tests.Properties;
 using FantaAstaServer.Tests.Sources;
 using Microsoft.AspNetCore.Hosting;

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Models.Configurations;
+using FantaAstaServer.Models.Options;
 using FantaAstaServer.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -10,9 +10,9 @@ namespace FantaAstaServer.Services
 {
     public class FantaAstaDbContext : DbContext
     {
-        private readonly PostgreSqlConfig _postgreSqlConfig;
+        private readonly PostgreSqlOptions _postgreSqlConfig;
 
-        public FantaAstaDbContext(IOptions<PostgreSqlConfig> postgreSqlConfig, DbContextOptions<FantaAstaDbContext> dbContextOptions)
+        public FantaAstaDbContext(IOptions<PostgreSqlOptions> postgreSqlConfig, DbContextOptions<FantaAstaDbContext> dbContextOptions)
             : base(dbContextOptions) => _postgreSqlConfig = postgreSqlConfig.Value;
 
         
