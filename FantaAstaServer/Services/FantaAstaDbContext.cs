@@ -1,19 +1,30 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
+using FantaAstaServer.Models.Configurations;
 using FantaAstaServer.Models.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FantaAstaServer.Services
 {
     public class FantaAstaDbContext : DbContext
     {
-        public FantaAstaDbContext(DbContextOptions<FantaAstaDbContext> dbContextOptions) : base(dbContextOptions) { }
+        private readonly PostgreSqlConfig _postgreSqlConfig;
+
+        public FantaAstaDbContext(IOptions<PostgreSqlConfig> postgreSqlConfig, DbContextOptions<FantaAstaDbContext> dbContextOptions)
+            : base(dbContextOptions) => _postgreSqlConfig = postgreSqlConfig.Value;
 
         
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<AuctionEntity> Auctions { get; set; }
 
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql(connectionString: _postgreSqlConfig.GetConnectionString());
+            base.OnConfiguring(optionsBuilder);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +32,8 @@ namespace FantaAstaServer.Services
             {
                 x.ToTable("Users");
                 x.HasKey(x => x.Id);
+                x.HasIndex(x => x.Email).IsUnique();
+                x.HasIndex(x => x.Username).IsUnique();
 
                 x.Property(x => x.Id).HasColumnName("id");
                 x.Property(x => x.Email).HasColumnName("email").IsRequired();
@@ -32,6 +45,7 @@ namespace FantaAstaServer.Services
                 x.Property(x => x.DateOfBirth).HasColumnName("date_of_birth");
                 x.Property(x => x.City).HasColumnName("city");
                 x.Property(x => x.FavouriteTeam).HasColumnName("favourite_team");
+
             });
 
             modelBuilder.Entity<UserAuctionEntity>(x =>
