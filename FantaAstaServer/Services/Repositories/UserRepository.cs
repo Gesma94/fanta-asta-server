@@ -18,5 +18,10 @@ namespace FantaAstaServer.Services.Repositories
         {
             return _fantaAstaDbContext.Set<UserEntity>().AsNoTracking().FirstOrDefaultAsync(x => x.Email.Equals(email));
         }
+
+        public Task<UserEntity> GetByUsername(string username)
+        {
+            return _fantaAstaDbContext.Set<UserEntity>().AsNoTracking().FirstOrDefaultAsync(x => x.Username.Equals(username));
+        }
     }
 }
