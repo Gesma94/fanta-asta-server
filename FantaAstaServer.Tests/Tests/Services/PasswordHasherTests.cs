@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Interfaces.Services;
 using FantaAstaServer.Models.Configurations;
 using FantaAstaServer.Services;
 using Microsoft.Extensions.Options;
@@ -21,21 +20,33 @@ namespace FantaAstaServer.Tests.Tests.Services
 
 
             [TestMethod]
+            public void NullParameter_ThrowException()
+            {
+                Assert.ThrowsException<ArgumentNullException>(() => new PasswordHasher(null));
+            }
+
+            [TestMethod]
+            public void NullOptions_ThrowException()
+            {
+                Assert.ThrowsException<ArgumentNullException>(() => new PasswordHasher(Options.Create<PasswordHasherConfig>(null)));
+            }
+
+            [TestMethod]
             public void IterationsZero_PlainPassword()
             {
-                Assert.AreEqual("password", new PasswordHasher(Options.Create<PasswordHasherConfig>(null)).ComputeHash("password", "irrelevant", iterations: 0));
+                Assert.AreEqual("password", new PasswordHasher(Options.Create(new PasswordHasherConfig())).ComputeHash("password", "irrelevant", iterations: 0));
             }
 
             [TestMethod]
             public void PasswordNull_ThrowException()
             {
-                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create<PasswordHasherConfig>(null)).ComputeHash(null, "irrelevant"));
+                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create(new PasswordHasherConfig())).ComputeHash(null, "irrelevant"));
             }
 
             [TestMethod]
             public void SaltNull_ThrowException()
             {
-                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create<PasswordHasherConfig>(null)).ComputeHash("irrelevant", null));
+                Assert.ThrowsException<ArgumentException>(() => new PasswordHasher(Options.Create(new PasswordHasherConfig())).ComputeHash("irrelevant", null));
             }
 
             [TestMethod]
