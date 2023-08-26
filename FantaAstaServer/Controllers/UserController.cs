@@ -7,38 +7,42 @@ using FantaAstaServer.Interfaces.Services;
 using FantaAstaServer.Models.APIs;
 using FantaAstaServer.Models.Configurations;
 using FantaAstaServer.Models.Domain;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace FantaAstaServer.Controllers
 {
-    [Route("v1/user/")]
+    [Route("api/v1/user/")]
     public class UserController : Controller
     {
         private readonly IEmailSender _emailSender;
         private readonly IDbUnitOfWork _dbUnitOfWork;
-        private readonly IConfigOptions _configOptions;
+        private readonly IPasswordHasher _passwordHasher;
 
 
-        public UserController(IConfigOptions configOptions, IEmailSender emailSender, IDbUnitOfWork dbUnitOfWork)
-            => (_configOptions, _emailSender, _dbUnitOfWork) = (configOptions, emailSender, dbUnitOfWork);
+        public UserController(IEmailSender emailSender, IPasswordHasher passwordHasher, IDbUnitOfWork dbUnitOfWork)
+            => (_emailSender, _passwordHasher, _dbUnitOfWork) = (emailSender, passwordHasher, dbUnitOfWork);
 
 
         /// <summary>
         /// Allows to register a new user in the system
         /// </summary>
         /// <param name="createUserDto"></param>
-        [HttpGet]
+        [HttpPut]
         [Route("register")]
-        public async Task<IActionResult> Create(CreateUserDto createUserDto)
+        public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
         {
             var newUserEntity = new UserEntity()
             {
                 Username = createUserDto.Username,
                 Email = createUserDto.Email,
-                Password = createUserDto.Password,
+                Password = _passwordHasher.ComputeHash(createUserDto.Password, createUserDto.Email),
                 City = createUserDto.City,
                 FavouriteTeam = createUserDto.FavouriteTeam,
                 DateOfBirth = createUserDto.DateOfBirth,
@@ -51,13 +55,30 @@ namespace FantaAstaServer.Controllers
             return Ok("Connection OK");
         }
 
+        [HttpPost]
+        [Route("login")]
+        public async Task<IActionResult> Login(string username, string password)
+        {
+
+            var user = await _dbUnitOfWork.Users.GetByUsername(username);
+
+            if (user.Password == _passwordHasher.ComputeHash(password, user.Email))
+            {
+                var claimIdentity = new ClaimsIdentity(new List<Claim>() { new(ClaimTypes.Name, username) }, "Login");
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimIdentity));
+
+                return Ok("Logged");
+            }
+
+            return BadRequest();
+        }
 
         [HttpPost]
         [Route("request-reset-password")]
-        public async Task<IActionResult> RequestResetPassword([FromBody] ResetPasswordRequestDto resetPasswordRequestDto)
+        public async Task<IActionResult> RequestResetPassword([FromServices] IOptions<SmtpConfig> smtpOptionsWrapper, ResetPasswordRequestDto resetPasswordRequestDto)
         {
+            var smtpOptions = smtpOptionsWrapper.Value;
             var user = await _dbUnitOfWork.Users.GetByEmail(resetPasswordRequestDto.Email);
-            var smptConfig = _configOptions.GetConfigProperty<SmtpConfig>(Constants.SmtpConfigKey);
 
             if (user == null)
             {
@@ -68,7 +89,7 @@ namespace FantaAstaServer.Controllers
             {
                 var subject = "FantaAsta: Recovery your password";
                 var textBody = "Click <a href=\"https://www.google.com\">here</a> to reset your password";
-                var mimeMessage = _emailSender.CreateMimeMessage(smptConfig.Username, resetPasswordRequestDto.Email, subject, textBody);
+                var mimeMessage = _emailSender.CreateMimeMessage(smtpOptions.Username, resetPasswordRequestDto.Email, subject, textBody);
 
                 user.ResetPasswordGuid = Guid.NewGuid();
                 user.ResetPasswordTimeStamp = DateTime.UtcNow;
@@ -77,7 +98,7 @@ namespace FantaAstaServer.Controllers
                 _dbUnitOfWork.Users.Update(user);
                 await _dbUnitOfWork.SaveChanges();
 
-                _emailSender.SendSslEmail(smptConfig.Host, smptConfig.Username, smptConfig.Password, mimeMessage);
+                _emailSender.SendSslEmail(smtpOptions.Host, smtpOptions.Username, smtpOptions.Password, mimeMessage);
 
                 return Ok();
             }
@@ -89,7 +110,7 @@ namespace FantaAstaServer.Controllers
 
         [HttpPost]
         [Route("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromServices] IPasswordHasher passwordHasher, [FromBody] ResetPasswordDto resetPasswordDto)
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
         {
             var user = await _dbUnitOfWork.Users.GetByEmail(resetPasswordDto.Email);
 
@@ -138,7 +159,7 @@ namespace FantaAstaServer.Controllers
             {
                 user.ResetPasswordGuid = null;
                 user.ResetPasswordTimeStamp = null;
-                user.Password = passwordHasher.ComputeHash(resetPasswordDto.NewPassword, user.Email);
+                user.Password = _passwordHasher.ComputeHash(resetPasswordDto.NewPassword, user.Email);
 
                 _dbUnitOfWork.Users.Update(user);
                 await _dbUnitOfWork.SaveChanges();

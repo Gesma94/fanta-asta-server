@@ -13,22 +13,43 @@ using Microsoft.Extensions.Configuration;
 using FantaAstaServer.Models.Configurations;
 using FantaAstaServer.Common.Constants;
 using FantaAstaServer.Interfaces.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System;
+using Microsoft.AspNetCore.Http;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using FantaAstaServer.JsonConverters;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.None; // will restrict this
 
-var postgreSqlConfig = builder.Configuration.GetSection(Constants.PostgresqlConfigKey).Get<PostgreSqlConfig>();
-var npgSqlConnectionString = $"User Id={postgreSqlConfig.Id};Password={postgreSqlConfig.Password};Server={postgreSqlConfig.Server};Port={postgreSqlConfig.Port};Database={postgreSqlConfig.Database}";
+        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+    });
+
+// Add options services
+builder.Services.AddOptions<SmtpConfig>().BindConfiguration(Constants.SmtpConfigKey);
+builder.Services.AddOptions<PostgreSqlConfig>().BindConfiguration(Constants.PostgresqlConfigKey);
+builder.Services.AddOptions<PasswordHasherConfig>().BindConfiguration(Constants.PasswordHasherConfigKey);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(x => {
+        x.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.AddDbContext<FantaAstaDbContext>(x => x.UseNpgsql(connectionString: npgSqlConnectionString));
+builder.Services.AddDbContext<FantaAstaDbContext>();
 
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IAuctionRepository, AuctionRepository>();
@@ -39,7 +60,6 @@ builder.Services.AddTransient<IUserActionRepository, UserActionRepository>();
 builder.Services.AddTransient<IDbUnitOfWork, DbUnitOfWork>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
-builder.Services.AddSingleton<IConfigOptions, ConfigOptions>();
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
@@ -53,8 +73,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
