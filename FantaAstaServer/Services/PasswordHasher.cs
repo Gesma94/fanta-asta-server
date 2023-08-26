@@ -15,7 +15,10 @@ namespace FantaAstaServer.Services
         private readonly PasswordHasherConfig _passwordHasherConfig;
 
 
-        public PasswordHasher(IOptions<PasswordHasherConfig> passwordHasherConfig) => _passwordHasherConfig = passwordHasherConfig.Value;
+        public PasswordHasher(IOptions<PasswordHasherConfig> passwordHasherConfig)
+        {
+            _passwordHasherConfig = passwordHasherConfig?.Value ?? throw new ArgumentNullException(nameof(passwordHasherConfig));
+        }
 
 
         public string ComputeHash(string password, string salt, string pepper = null, int? iterations = null)
@@ -34,8 +37,7 @@ namespace FantaAstaServer.Services
             {
                 return password;
             }
-
-            
+                        
             pepper ??= _passwordHasherConfig.Pepper;
             iterations ??= _passwordHasherConfig.Iterations;
 
