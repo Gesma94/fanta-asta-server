@@ -1,19 +1,23 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Models.Options;
 using FantaAstaServer.Models.Domain;
+using FantaAstaServer.Models.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace FantaAstaServer.Services
 {
     public class FantaAstaDbContext : DbContext
     {
-        private readonly PostgreSqlOptions _postgreSqlConfig;
+        private readonly PostgreSqlOptions _postgreSqlOptions;
 
         public FantaAstaDbContext(IOptions<PostgreSqlOptions> postgreSqlConfig, DbContextOptions<FantaAstaDbContext> dbContextOptions)
-            : base(dbContextOptions) => _postgreSqlConfig = postgreSqlConfig.Value;
+            : base(dbContextOptions)
+        { 
+             _postgreSqlOptions = postgreSqlConfig?.Value ?? throw new ArgumentNullException(nameof(postgreSqlConfig));
+        }
 
         
         public DbSet<UserEntity> Users { get; set; }
@@ -22,7 +26,7 @@ namespace FantaAstaServer.Services
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(connectionString: _postgreSqlConfig.GetConnectionString());
+            optionsBuilder.UseNpgsql(connectionString: _postgreSqlOptions.GetConnectionString());
             base.OnConfiguring(optionsBuilder);
         }
 

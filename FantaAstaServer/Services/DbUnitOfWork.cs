@@ -22,13 +22,13 @@ namespace FantaAstaServer.Services
         public DbUnitOfWork(FantaAstaDbContext fantaAstaDbContext, IAuctionRepository auctionRepository, IBatchRepository batchRepository,
             IFootballerRepository footballerRepository, IOfferRepository offerRepository, IUserActionRepository userActionRepository, IUserRepository userRepository)
         {
-            _userRepository = userRepository;
-            _auctionRepository = auctionRepository;
-            _fantaAstaDbContext = fantaAstaDbContext;
-            _batchRepository = batchRepository;
-            _footballerRepository= footballerRepository;
-            _userActionRepository = userActionRepository;
-            _offerRepository= offerRepository;
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _offerRepository= offerRepository ?? throw new ArgumentNullException(nameof(offerRepository));
+            _batchRepository = batchRepository ?? throw new ArgumentNullException(nameof(batchRepository));
+            _auctionRepository = auctionRepository ?? throw new ArgumentNullException(nameof(auctionRepository));
+            _fantaAstaDbContext = fantaAstaDbContext ?? throw new ArgumentNullException(nameof(fantaAstaDbContext));
+            _footballerRepository= footballerRepository ?? throw new ArgumentNullException(nameof(footballerRepository));
+            _userActionRepository = userActionRepository ?? throw new ArgumentNullException(nameof(userActionRepository));
         }
 
 
