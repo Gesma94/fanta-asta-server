@@ -1,44 +1,104 @@
-﻿using DotNet.Testcontainers.Builders;
-using FantaAstaServer.Controllers;
-using FantaAstaServer.Interfaces.Services;
+﻿// Copyright (c) 2023 - Gesma94
+// This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
+
 using FantaAstaServer.Models.APIs;
-using FantaAstaServer.Models.Options;
-using FantaAstaServer.Tests.Properties;
-using FantaAstaServer.Tests.Sources;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Npgsql;
 using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
+using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Testcontainers.PostgreSql;
 
-[assembly: Parallelize(Workers = 0, Scope = ExecutionScope.MethodLevel)]
 namespace FantaAstaServer.Tests.Tests.Controllers
 {
-    
-    [TestClass]
     public class UserControllerTests
     {
-        private static FantaAstaApplicationFactory _factory = new FantaAstaApplicationFactory();
-
-        [ClassCleanup]
-        public static void ClassCleanup()
+        [TestClass]
+        public class Register
         {
-            _factory.Dispose();
+            [TestMethod]
+            [DataRow("/api/v1/user/register", "The provided parameter is not valid")]
+            [DataRow("/api/v1/en-US/user/register", "The provided parameter is not valid")]
+            [DataRow("/api/v1/it-IT/user/register", "Il parametro fornito non è valido")]
+            public void NullParameter_BadRequest(string requestUri, string expectedErrorMessage)
+            {
+                using var clientWrapper = new FantaAstaHttpClientWrapper();
+                HttpContent inputContent = new StringContent(JsonSerializer.Serialize<CreateUserDto>(null), Encoding.UTF8, "application/json");
+                
+                var result = clientWrapper.Client.PutAsync(requestUri, inputContent).Result;
+
+                Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+                Assert.AreEqual(expectedErrorMessage, result.Content.ReadAsStringAsync().Result);
+            }
+
+            [TestMethod]
+            [DataRow("/api/v1/user/register", "The provided parameter is not valid")]
+            [DataRow("/api/v1/en-US/user/register", "The provided parameter is not valid")]
+            [DataRow("/api/v1/it-IT/user/register", "Il parametro fornito non è valido")]
+            public void UsernameNull_BadRequest(string requestUri, string expectedErrorMessage)
+            {
+                using var clientWrapper = new FantaAstaHttpClientWrapper();
+                HttpContent inputContent = new StringContent(JsonSerializer.Serialize(new CreateUserDto()
+                {
+                    Username = null,
+                    City = "irrelevant",
+                    Email = "irrelevant",
+                    Password = "irrelevant",
+                    FavouriteTeam = "irrelevant",
+                    DateOfBirth = DateOnly.FromDateTime(DateTime.Now)
+                }), Encoding.UTF8, "application/json");
+
+                var result = clientWrapper.Client.PutAsync(requestUri, inputContent).Result;
+
+                Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+                Assert.AreEqual(expectedErrorMessage, result.Content.ReadAsStringAsync().Result);
+            }
+
+            [TestMethod]
+            [DataRow("/api/v1/user/register", "The provided parameter is not valid")]
+            [DataRow("/api/v1/en-US/user/register", "The provided parameter is not valid")]
+            [DataRow("/api/v1/it-IT/user/register", "Il parametro fornito non è valido")]
+            public void PasswordNull_BadRequest(string requestUri, string expectedErrorMessage)
+            {
+                using var clientWrapper = new FantaAstaHttpClientWrapper();
+                HttpContent inputContent = new StringContent(JsonSerializer.Serialize(new CreateUserDto()
+                {
+                    Password = null,
+                    City = "irrelevant",
+                    Email = "irrelevant",
+                    Username = "irrelevant",
+                    FavouriteTeam = "irrelevant",
+                    DateOfBirth = DateOnly.FromDateTime(DateTime.Now)
+                }), Encoding.UTF8, "application/json");
+
+                var result = clientWrapper.Client.PutAsync(requestUri, inputContent).Result;
+
+                Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+                Assert.AreEqual(expectedErrorMessage, result.Content.ReadAsStringAsync().Result);
+            }
+
+            [TestMethod]
+            [DataRow("/api/v1/user/register", "The provided parameter is not valid")]
+            [DataRow("/api/v1/en-US/user/register", "The provided parameter is not valid")]
+            [DataRow("/api/v1/it-IT/user/register", "Il parametro fornito non è valido")]
+            public void EmailNull_BadRequest(string requestUri, string expectedErrorMessage)
+            {
+                using var clientWrapper = new FantaAstaHttpClientWrapper();
+                HttpContent inputContent = new StringContent(JsonSerializer.Serialize(new CreateUserDto()
+                {
+                    Email = null,
+                    City = "irrelevant",
+                    Password = "irrelevant",
+                    Username = "irrelevant",
+                    FavouriteTeam = "irrelevant",
+                    DateOfBirth = DateOnly.FromDateTime(DateTime.Now)
+                }), Encoding.UTF8, "application/json");
+
+                var result = clientWrapper.Client.PutAsync(requestUri, inputContent).Result;
+
+                Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+                Assert.AreEqual(expectedErrorMessage, result.Content.ReadAsStringAsync().Result);
+            }
         }
 
         [TestMethod]
@@ -76,17 +136,6 @@ namespace FantaAstaServer.Tests.Tests.Controllers
 
             HttpContent inputContent = new StringContent(inputJson, Encoding.UTF8, "application/json");
             clientWrapper.Client.PutAsync("/api/v1/user/register", inputContent).Wait();
-        }
-    }
-
-    [TestClass]
-    public class UserControllerTests2
-    { 
-        [TestMethod]
-        public void AppleJuice()
-        {
-        Assert.AreEqual(2, 2);
-
         }
     }
 }

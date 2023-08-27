@@ -30,7 +30,7 @@ namespace FantaAstaServer.Tests.Sources
 
             Console.WriteLine($"Port is: {npgsqlConnectionStringBuilder.ConnectionString}");
 
-            var commandPost = Resources.Db;
+            var commandPost = Properties.Resources.Db;
 
             using DbCommand command = new NpgsqlCommand();
             using DbConnection connection = new NpgsqlConnection(_postgreSqlBuilder.GetConnectionString());
