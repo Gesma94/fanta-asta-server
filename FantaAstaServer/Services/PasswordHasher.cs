@@ -12,12 +12,12 @@ namespace FantaAstaServer.Services
 {
     public class PasswordHasher : IPasswordHasher
     {
-        private readonly PasswordHasherOptions _passwordHasherConfig;
+        private readonly PasswordHasherOptions _passwordHasherOptions;
 
 
         public PasswordHasher(IOptions<PasswordHasherOptions> passwordHasherConfig)
         {
-            _passwordHasherConfig = passwordHasherConfig?.Value ?? throw new ArgumentNullException(nameof(passwordHasherConfig));
+            _passwordHasherOptions = passwordHasherConfig?.Value ?? throw new ArgumentNullException(nameof(passwordHasherConfig));
         }
 
 
@@ -38,8 +38,8 @@ namespace FantaAstaServer.Services
                 return password;
             }
                         
-            pepper ??= _passwordHasherConfig.Pepper;
-            iterations ??= _passwordHasherConfig.Iterations;
+            pepper ??= _passwordHasherOptions.Pepper;
+            iterations ??= _passwordHasherOptions.Iterations;
 
             using var sha512 = SHA512.Create();
             var hashInput = $"{password}{salt}{pepper}";
