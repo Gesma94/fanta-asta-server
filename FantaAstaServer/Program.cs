@@ -19,6 +19,20 @@ using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using FantaAstaServer.JsonConverters;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
+using FantaAstaServer.Extensions;
+using Microsoft.AspNetCore.Routing;
+using FantaAstaServer.Utils;
+
+var allSupportedCulturesInfo = new CultureInfo[] { new("en-US"), new("it-IT") };
+var supportedCultures = allSupportedCulturesInfo.Select(x => x.Name).ToArray();
+
+
+LocalizedResourceUtils.VerifyKeys(allSupportedCulturesInfo);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +51,16 @@ builder.Services.AddOptions<SmtpOptions>().BindConfiguration(Constants.SmtpConfi
 builder.Services.AddOptions<PostgreSqlOptions>().BindConfiguration(Constants.PostgresqlConfigKey);
 builder.Services.AddOptions<PasswordHasherOptions>().BindConfiguration(Constants.PasswordHasherConfigKey);
 
+builder.Services.AddLocalization();
+builder.Services.Configure<RouteOptions>(options => options.ConstraintMap.Add("culture", typeof(CultureRouteConstraint)));
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.SetDefaultCulture(supportedCultures.First())
+        .AddSupportedCultures(supportedCultures)
+        .AddSupportedUICultures(supportedCultures);
+
+    options.RequestCultureProviders = new[] { new RuoteRequestCultureProvider() };
+});
 // Add services to the container.
 
 
@@ -61,6 +85,7 @@ builder.Services.AddTransient<IDbUnitOfWork, DbUnitOfWork>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
+builder.Services.AddTransient<ILocalizer, Localizer>();
 
 var app = builder.Build();
 
@@ -75,6 +100,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(options.Value);
 
 app.MapControllers();
 
