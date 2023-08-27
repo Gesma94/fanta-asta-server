@@ -13,12 +13,8 @@ namespace FantaAstaServer.Tests.Tests.Services
     public class PasswordHasherTests
     {
         [TestClass]
-        public class ComputeHash
+        public class Ctor 
         {
-            private const int _iterations = 7;
-            private const string _pepper = "pepper";
-
-
             [TestMethod]
             public void NullParameter_ThrowException()
             {
@@ -30,6 +26,14 @@ namespace FantaAstaServer.Tests.Tests.Services
             {
                 Assert.ThrowsException<ArgumentNullException>(() => new PasswordHasher(Options.Create<PasswordHasherOptions>(null)));
             }
+        }
+
+        [TestClass]
+        public class ComputeHash
+        {
+            private const int _iterations = 7;
+            private const string _pepper = "pepper";
+
 
             [TestMethod]
             public void IterationsZero_PlainPassword()
