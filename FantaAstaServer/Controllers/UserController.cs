@@ -15,44 +15,65 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using FantaAstaServer.Services;
+using FantaAstaServer.Common;
 
 namespace FantaAstaServer.Controllers
 {
     [Route("api/v1/user/")]
+    [Route("api/v1/{culture:culture}/user/")]
     public class UserController : Controller
     {
+        private readonly ILocalizer _localizer;
         private readonly IEmailSender _emailSender;
         private readonly IDbUnitOfWork _dbUnitOfWork;
         private readonly IPasswordHasher _passwordHasher;
 
 
-        public UserController(IEmailSender emailSender, IPasswordHasher passwordHasher, IDbUnitOfWork dbUnitOfWork)
-            => (_emailSender, _passwordHasher, _dbUnitOfWork) = (emailSender, passwordHasher, dbUnitOfWork);
+        public UserController(ILocalizer localizer, IEmailSender emailSender, IPasswordHasher passwordHasher, IDbUnitOfWork dbUnitOfWork)
+            => (_localizer, _emailSender, _passwordHasher, _dbUnitOfWork) = (localizer, emailSender, passwordHasher, dbUnitOfWork);
 
 
         /// <summary>
         /// Allows to register a new user in the system
         /// </summary>
-        /// <param name="createUserDto"></param>
         [HttpPut]
         [Route("register")]
-        public async Task<IActionResult> Create([FromBody] CreateUserDto createUserDto)
+        public async Task<IActionResult> Register([FromBody] CreateUserDto createUserDto)
         {
-            var newUserEntity = new UserEntity()
+            if (createUserDto == null)
             {
-                Username = createUserDto.Username,
-                Email = createUserDto.Email,
-                Password = _passwordHasher.ComputeHash(createUserDto.Password, createUserDto.Email),
-                City = createUserDto.City,
-                FavouriteTeam = createUserDto.FavouriteTeam,
-                DateOfBirth = createUserDto.DateOfBirth,
-                CraetionDate = DateTime.UtcNow
-            };
+                return BadRequest(_localizer.GetStringValue(LocalizerKey.UserController_Register_Error_NullParameter));
+            }
 
-            await _dbUnitOfWork.Users.Create(newUserEntity);
-            await _dbUnitOfWork.SaveChanges();
+            if (!TryValidateModel(createUserDto))
+            {
+                return BadRequest(_localizer.GetStringValue(LocalizerKey.UserController_Register_Error_InvalidParameter));
+            }
 
-            return Ok("Connection OK");
+            try
+            {
+                var newUserEntity = new UserEntity()
+                {
+                    Username = createUserDto.Username,
+                    Email = createUserDto.Email,
+                    Password = _passwordHasher.ComputeHash(createUserDto.Password, createUserDto.Email),
+                    City = createUserDto.City,
+                    FavouriteTeam = createUserDto.FavouriteTeam,
+                    DateOfBirth = createUserDto.DateOfBirth,
+                    CraetionDate = DateTime.UtcNow
+                };
+
+                await _dbUnitOfWork.Users.Create(newUserEntity);
+                await _dbUnitOfWork.SaveChanges();
+
+                return Ok("Connection OK");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("couldn't perform the operation");
+            }
         }
 
         [HttpPost]
