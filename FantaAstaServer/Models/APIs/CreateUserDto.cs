@@ -3,20 +3,27 @@
 
 using FantaAstaServer.JsonConverters;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace FantaAstaServer.Models.APIs
 {
-    //public record CreateUserDto(string Username, string Password, string Email, [property:JsonConverter(typeof(DateOnlyJsonConverter))] DateOnly DateOfBirth, string FavouriteTeam, string City);
     public class CreateUserDto
     {
+        [Required]
         public string Username { get; set; }
+
+        [Required]
         public string Password { get; set; }
+
+        [Required]
         public string Email { get; set; }
 
         [JsonConverter(typeof(DateOnlyJsonConverter))]
         public DateOnly DateOfBirth { get; set; }
+
         public string FavouriteTeam { get; set; }
+
         public string City { get; set; }
     }
 }
