@@ -24,13 +24,11 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
-using FantaAstaServer.Extensions;
 using Microsoft.AspNetCore.Routing;
 using FantaAstaServer.Utils;
 
 var allSupportedCulturesInfo = new CultureInfo[] { new("en-US"), new("it-IT") };
 var supportedCultures = allSupportedCulturesInfo.Select(x => x.Name).ToArray();
-
 
 LocalizedResourceUtils.VerifyKeys(allSupportedCulturesInfo);
 
@@ -52,14 +50,13 @@ builder.Services.AddOptions<PostgreSqlOptions>().BindConfiguration(Constants.Pos
 builder.Services.AddOptions<PasswordHasherOptions>().BindConfiguration(Constants.PasswordHasherConfigKey);
 
 builder.Services.AddLocalization();
-builder.Services.Configure<RouteOptions>(options => options.ConstraintMap.Add("culture", typeof(CultureRouteConstraint)));
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     options.SetDefaultCulture(supportedCultures.First())
         .AddSupportedCultures(supportedCultures)
         .AddSupportedUICultures(supportedCultures);
 
-    options.RequestCultureProviders = new[] { new RuoteRequestCultureProvider() };
+    options.RequestCultureProviders = new[] { new AcceptLanguageHeaderRequestCultureProvider() };
 });
 // Add services to the container.
 

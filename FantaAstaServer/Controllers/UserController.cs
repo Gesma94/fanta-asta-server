@@ -22,7 +22,6 @@ using FantaAstaServer.Common;
 namespace FantaAstaServer.Controllers
 {
     [Route("api/v1/user/")]
-    [Route("api/v1/{culture:culture}/user/")]
     public class UserController : Controller
     {
         private readonly ILocalizer _localizer;
