@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
+using FantaAstaServer.JsonConverters;
 using System;
+using System.Text.Json.Serialization;
 
 namespace FantaAstaServer.Models.Domain
 {
@@ -13,6 +15,7 @@ namespace FantaAstaServer.Models.Domain
         public Guid? ResetPasswordGuid { get; set; }
         public DateTime? ResetPasswordTimeStamp { get; set; }
         public DateTime CraetionDate { get; set; }
+        [JsonConverter(typeof(DateOnlyJsonConverter))]
         public DateOnly? DateOfBirth { get; set; }
         public string FavouriteTeam { get; set; }
         public string City { get; set; }
