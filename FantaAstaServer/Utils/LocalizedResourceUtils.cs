@@ -1,15 +1,14 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Resources;
-using System.Collections;
-using System;
-using System.Resources;
-using System.Reflection;
 using FantaAstaServer.Common;
-using System.Linq;
-using System.Globalization;
+using FantaAstaServer.Resources;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Resources;
 
 namespace FantaAstaServer.Utils
 {
