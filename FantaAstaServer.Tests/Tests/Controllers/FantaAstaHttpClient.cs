@@ -48,5 +48,7 @@ namespace FantaAstaServer.Tests.Tests.Controllers
 
 
         public HttpClient Client { get; }    
+
+        public IServiceProvider Services { get => _factory.Services; }
     }
 }

@@ -58,7 +58,6 @@ namespace FantaAstaServer.Tests.Sources
 
         protected override void Dispose(bool disposing)
         {
-            //_postgreSqlBuilder.DisposeAsync().AsTask().Wait();
             base.Dispose(disposing);
         }
     }
