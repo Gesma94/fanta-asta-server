@@ -3,6 +3,8 @@
 
 using FantaAstaServer.Models.Domain;
 using FantaAstaServer.Interfaces.Repositories;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace FantaAstaServer.Services.Repositories
 {
@@ -10,6 +12,16 @@ namespace FantaAstaServer.Services.Repositories
     {
         public UserActionRepository(FantaAstaDbContext fantaAstaDbContext) : base(fantaAstaDbContext)
         {
+        }
+
+        public Task<IQueryable<UserAuctionEntity>> GetByUserId(int userId)
+        {
+            return Task.FromResult(GetAll().Where(x => x.UserId == userId));
+        }
+
+        public Task<IQueryable<UserAuctionEntity>> GetByAuctionId(int auctionId)
+        {
+            return Task.FromResult(GetAll().Where(x => x.AuctionId == auctionId));
         }
     }
 }
