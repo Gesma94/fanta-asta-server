@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using FantaAstaServer.Services;
 using FantaAstaServer.Common;
+using FantaAstaServer.Models.DTOs;
+using FantaAstaServer.Enums;
 
 namespace FantaAstaServer.Controllers
 {
@@ -49,6 +51,16 @@ namespace FantaAstaServer.Controllers
             if (!TryValidateModel(createUserDto))
             {
                 return BadRequest(_localizer.GetStringValue(LocalizerKey.UserController_Register_Error_InvalidParameter));
+            }
+
+            if ((await _dbUnitOfWork.Users.GetByEmail(createUserDto.Email)) != null)
+            {
+                return BadRequest(new Error(ErrorCode.EmailAlreadyUsed, "Email is already used"));
+            }
+
+            if (await (_dbUnitOfWork.Users.GetByUsername(createUserDto.Username)) != null)
+            {
+                return BadRequest(new Error(ErrorCode.UsernameAlreadyUsed, "Username is already used"));
             }
 
             try
