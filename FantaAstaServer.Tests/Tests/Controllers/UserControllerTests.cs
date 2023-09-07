@@ -1,8 +1,11 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
+using FantaAstaServer.Enums;
 using FantaAstaServer.Interfaces.Repositories;
 using FantaAstaServer.Models.APIs;
+using FantaAstaServer.Models.DTOs;
+using FantaAstaServer.Tests.Sources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -104,51 +107,75 @@ namespace FantaAstaServer.Tests.Tests.Controllers
             }
 
             [TestMethod]
-            public void DuplicateUser_BadRequest()
+            public void EmailAlreadyUsed_BadRequest()
             {
                 using var clientWrapper = new FantaAstaHttpClientWrapper();
-                HttpContent inputContent = new StringContent(JsonSerializer.Serialize(new CreateUserDto()
+                HttpContent inputContent1 = new StringContent(JsonSerializer.Serialize(new CreateUserDto()
                 {
                     City = "city",
                     Password = "password",
-                    Username = "username",
+                    Username = "username1",
+                    Email = "fake@gmail.com",
+                    FavouriteTeam = "favourite team",
+                    DateOfBirth = new DateOnly(1946, 8, 12)
+                }), Encoding.UTF8, "application/json");
+                HttpContent inputContent2 = new StringContent(JsonSerializer.Serialize(new CreateUserDto()
+                {
+                    City = "city",
+                    Password = "password",
+                    Username = "username2",
                     Email = "fake@gmail.com",
                     FavouriteTeam = "favourite team",
                     DateOfBirth = new DateOnly(1946, 8, 12)
                 }), Encoding.UTF8, "application/json");
 
-                clientWrapper.Client.PutAsync("/api/v1/user/register", inputContent).Wait();
-                var result = clientWrapper.Client.PutAsync("/api/v1/user/register", inputContent).Result;
+                clientWrapper.Client.PutAsync("/api/v1/user/register", inputContent1).Wait();
+                var result = clientWrapper.Client.PutAsync("/api/v1/user/register", inputContent2).Result;
 
                 Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
-                Assert.AreEqual("couldn't perform the operation", result.Content.ReadAsStringAsync().Result);
+                var error = ReadContent<Error>(result.Content);
+
+                Assert.AreEqual(ErrorCode.EmailAlreadyUsed, error.Code);
+                Assert.AreEqual("Email is already used", error.Message);
             }
 
             [TestMethod]
-            public void ValidInput_ExpectedOutput()
+            public void DuplicateUser_BadRequest()
             {
                 using var clientWrapper = new FantaAstaHttpClientWrapper();
-                HttpContent inputContent = new StringContent(JsonSerializer.Serialize(new CreateUserDto()
+                HttpContent inputContent1 = new StringContent(JsonSerializer.Serialize(new CreateUserDto()
                 {
                     City = "city",
                     Password = "password",
                     Username = "username",
-                    Email = "fake@gmail.com",
+                    Email = "fak1e@gmail.com",
+                    FavouriteTeam = "favourite team",
+                    DateOfBirth = new DateOnly(1946, 8, 12)
+                }), Encoding.UTF8, "application/json");
+                HttpContent inputContent2 = new StringContent(JsonSerializer.Serialize(new CreateUserDto()
+                {
+                    City = "city",
+                    Password = "password",
+                    Username = "username",
+                    Email = "fake2@gmail.com",
                     FavouriteTeam = "favourite team",
                     DateOfBirth = new DateOnly(1946, 8, 12)
                 }), Encoding.UTF8, "application/json");
 
-                var result = clientWrapper.Client.PutAsync("/api/v1/user/register", inputContent).Result;         
-                
-                using var scope = clientWrapper.Services.CreateScope();
-                var user = scope.ServiceProvider.GetRequiredService<IUserRepository>().GetAll().Single();
+                clientWrapper.Client.PutAsync("/api/v1/user/register", inputContent1).Wait();
+                var result = clientWrapper.Client.PutAsync("/api/v1/user/register", inputContent2).Result;
 
-                Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
-                Assert.AreEqual("city", user.City);
-                Assert.AreEqual("username", user.Username);
-                Assert.AreEqual("fake@gmail.com", user.Email);
-                Assert.AreEqual("favourite team", user.FavouriteTeam);
-                Assert.AreEqual(new DateOnly(1946, 8, 12), user.DateOfBirth);
+                Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+                var error = ReadContent<Error>(result.Content);
+
+                Assert.AreEqual(ErrorCode.UsernameAlreadyUsed, error.Code);
+                Assert.AreEqual("Username is already used", error.Message);
+            }
+
+            private static T ReadContent<T>(HttpContent httpContent)
+            {
+                var stringContent = httpContent.ReadAsStringAsync().Result;
+                return  JsonSerializer.Deserialize<T>(stringContent, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
             }
         }
     }
