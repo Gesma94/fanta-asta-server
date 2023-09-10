@@ -5,8 +5,6 @@ namespace FantaAstaServer.Enums
 {
     public enum AuctionStatus
     {
-        Initialized,
-        InLobby,
         Created,
         Started,
         Ended

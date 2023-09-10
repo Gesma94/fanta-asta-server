@@ -26,6 +26,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Routing;
 using FantaAstaServer.Utils;
+using FantaAstaServer.Hubs;
 
 var allSupportedCulturesInfo = new CultureInfo[] { new("en-US"), new("it-IT") };
 var supportedCultures = allSupportedCulturesInfo.Select(x => x.Name).ToArray();
@@ -33,6 +34,8 @@ var supportedCultures = allSupportedCulturesInfo.Select(x => x.Name).ToArray();
 LocalizedResourceUtils.VerifyKeys(allSupportedCulturesInfo);
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -102,6 +105,7 @@ var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(options.Value);
 
 app.MapControllers();
+app.MapHub<AuctionHub>("/auctionHub");
 
 app.Run();
 

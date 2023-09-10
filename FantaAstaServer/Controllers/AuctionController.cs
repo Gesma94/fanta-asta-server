@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace FantaAstaServer.Controllers
 {
-    [Route("api/v1/user/")]
+    [Route("api/v1/auction/")]
     public class AuctionController : Controller
     {
         private readonly IDbUnitOfWork _dbUnitOfWork;
@@ -68,8 +68,8 @@ namespace FantaAstaServer.Controllers
         /// Starts an auction.
         /// </summary>
         [HttpPut]
-        [Route("enter-lobby")]
-        public async Task<IActionResult> EnterLobby([FromQuery] int userId, [FromQuery] int auctionId)
+        [Route("join")]
+        public async Task<IActionResult> Join([FromQuery] int userId, [FromQuery] int auctionId)
         {
             try
             {
@@ -81,9 +81,9 @@ namespace FantaAstaServer.Controllers
                     return BadRequest("user already registered in auction");
                 }
 
-                if (auction.Status != Enums.AuctionStatus.InLobby)
+                if (auction.Status != Enums.AuctionStatus.Created)
                 {
-                    return BadRequest("cannot enter an auction if it's not in lobby state");
+                    return BadRequest("cannot enter an auction if it's not in created state");
                 }
 
                 if (usersInAuction.Count() >= auction.UserAmount)
