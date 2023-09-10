@@ -21,9 +21,9 @@ namespace FantaAstaServer.Hubs
         {
             var auction = await _dbUnitOfWork.Auctions.Get(auctionId);
 
-            if (auction.Status != Enums.AuctionStatus.InLobby)
+            if (auction.Status != Enums.AuctionStatus.Created)
             {
-                // cannot join lobby if auction is not in lobby state
+                // cannot join lobby if auction is not in created state
                 return;
             }
 
