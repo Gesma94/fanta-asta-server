@@ -64,6 +64,24 @@ namespace FantaAstaServer.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("get-by-user")]
+        public async Task<IActionResult> Create([FromQuery] int userId)
+        {
+            try
+            {
+                var usersInAuction = await _dbUnitOfWork.UserActions.GetByUserId(userId);
+
+                // Create a specific DTO for this. Do not send the whole since is not needed
+
+                return Ok(usersInAuction);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("couldn't perform the operation");
+            }
+        }
+
         /// <summary>
         /// Starts an auction.
         /// </summary>
