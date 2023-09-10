@@ -66,7 +66,7 @@ namespace FantaAstaServer.Controllers
 
         [HttpGet]
         [Route("get-by-user")]
-        public async Task<IActionResult> Create([FromQuery] int userId)
+        public async Task<IActionResult> GetByUser([FromQuery] int userId)
         {
             try
             {
