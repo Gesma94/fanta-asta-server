@@ -1,16 +1,13 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Common;
 using FantaAstaServer.Interfaces;
 using FantaAstaServer.Models.APIs;
 using FantaAstaServer.Models.Domain;
-using FantaAstaServer.Models.DTOs;
-using FantaAstaServer.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FantaAstaServer.Controllers
 {
@@ -68,18 +65,11 @@ namespace FantaAstaServer.Controllers
         [Route("get-by-user")]
         public async Task<IActionResult> GetByUser([FromQuery] int userId)
         {
-            try
-            {
-                var usersInAuction = await _dbUnitOfWork.UserActions.GetByUserId(userId);
+            var usersInAuction = await _dbUnitOfWork.UserActions.GetByUserId(userId);
 
-                // Create a specific DTO for this. Do not send the whole since is not needed
+            // Create a specific DTO for this. Do not send the whole since is not needed
 
-                return Ok(usersInAuction);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("couldn't perform the operation");
-            }
+            return Ok(usersInAuction);          
         }
 
         /// <summary>
