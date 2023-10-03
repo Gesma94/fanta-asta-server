@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
+using System.Collections.Generic;
 using FantaAstaServer.Interfaces.Repositories;
 using FantaAstaServer.Models.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,13 @@ namespace FantaAstaServer.Services.Repositories
             await _fantaAstaDbContext.Set<T>().AddAsync(entity);
             return true;
         }
-
+        
+        public async Task<bool> Create(IEnumerable<T> entities)
+        {
+            await _fantaAstaDbContext.Set<T>().AddRangeAsync(entities);
+            return true;
+        }
+        
         public async Task<bool> Delete(int key)
         {
             _fantaAstaDbContext.Set<T>().Remove(await Get(key));
