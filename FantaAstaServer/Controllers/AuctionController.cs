@@ -1,38 +1,58 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
+using FantaAstaServer.Enums;
+using FantaAstaServer.Extensions;
+using FantaAstaServer.Hubs;
 using FantaAstaServer.Interfaces;
+using FantaAstaServer.Interfaces.Services.Mappers;
 using FantaAstaServer.Models.APIs;
 using FantaAstaServer.Models.Domain;
+using FantaAstaServer.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FantaAstaServer.Interfaces.Services;
 
 namespace FantaAstaServer.Controllers
 {
+    [Authorize]
     [Route("api/v1/auction/")]
     public class AuctionController : Controller
     {
         private readonly IDbUnitOfWork _dbUnitOfWork;
+        private readonly IAuctionMapper _auctionMapper;
+        private readonly IHubContext<AuctionHub> _auctionHub;
+        private readonly IFormFileReader _formFileReader;
 
-
-        public AuctionController(IDbUnitOfWork dbUnitOfWork)
-            => (_dbUnitOfWork) = (dbUnitOfWork);
+        public AuctionController(IDbUnitOfWork dbUnitOfWork, IAuctionMapper auctionMapper, IFormFileReader formFileReader, IHubContext<AuctionHub> auctionHub)
+            => (_dbUnitOfWork, _auctionMapper, _formFileReader, _auctionHub) = (dbUnitOfWork, auctionMapper, formFileReader, auctionHub);
 
 
         /// <summary>
-        /// Creates a new auction.
+        /// Creates a new auction
         /// </summary>
-        [HttpPut]
+        /// <param name="createAuctionRequestDto">Specifies all the details needed to create a new auction</param>
+        [HttpPost]
         [Route("create")]
         public async Task<IActionResult> Create([FromBody] CreateAuctionRequestDto createAuctionRequestDto)
         {
-            try
+            var adminUser = await _dbUnitOfWork.Users.GetByUsername(createAuctionRequestDto.AdminUsername);
+
+            if (adminUser == null)
             {
-                var newAuctionEntity = new AuctionEntity()
+                return BadRequest(new Error(ErrorCode.UsernameNotFound, $"Username '{createAuctionRequestDto.AdminUsername}' not found"));
+            }
+
+            var dbTransaction = _dbUnitOfWork.BeginTransaction();
+
+            var newAuctionEntity = new AuctionEntity()
             {
-                CreationDate = DateTime.Now,
+                CreationDate = DateTime.UtcNow,
                 Status = Enums.AuctionStatus.Created,
                 Name = createAuctionRequestDto.Name,
                 UserAmount = createAuctionRequestDto.UserAmount,
@@ -49,108 +69,127 @@ namespace FantaAstaServer.Controllers
                 StrikerMaxAmount = createAuctionRequestDto.StrikerMaxAmount
             };
 
-          
-                await _dbUnitOfWork.Auctions.Create(newAuctionEntity);
-                await _dbUnitOfWork.SaveChanges();
+            DateTime.SpecifyKind(newAuctionEntity.CreationDate, DateTimeKind.Utc);
 
-                return Ok("Connection OK");
-            }
-            catch (Exception ex)
+            await _dbUnitOfWork.Auctions.Create(newAuctionEntity);
+            await _dbUnitOfWork.SaveChanges();
+
+            var newFootballers = _formFileReader.GetJsonFootballers(createAuctionRequestDto.FootballersFile)
+                .Select(x => new FootballerEntity()
+                {
+                    Role = x.Role,
+                    Price = x.Price,
+                    LastName = x.LastName,
+                    FirstName = x.FirstName,
+                    AuctionId = newAuctionEntity.Id
+                });
+
+            await _dbUnitOfWork.Footballers.Create(newFootballers);
+            
+            var newUserAuctionEntity = new UserAuctionEntity()
             {
-                return BadRequest("couldn't perform the operation");
-            }
+                IsAdmin = true,
+                UserId = adminUser.Id,
+                AuctionId = newAuctionEntity.Id
+            };
+
+            await _dbUnitOfWork.UserAuctions.Create(newUserAuctionEntity);          
+            await _dbUnitOfWork.SaveChanges();
+
+            await dbTransaction.CommitAsync();
+
+            return Ok();
         }
 
+        /// <summary>
+        /// Gets all the auctions that the user identified by <paramref name="userId"/> has joined
+        /// </summary>
+        /// <param name="userId">The id of the user for which the auctions are required</param>
         [HttpGet]
-        [Route("get-by-user")]
-        public async Task<IActionResult> GetByUser([FromQuery] int userId)
+        [Route("/api/v1/auctions/user/{userId}")]
+        public async Task<IActionResult> GetByUser(int userId)
         {
-            var usersInAuction = await _dbUnitOfWork.UserActions.GetByUserId(userId);
+            var auctions = new List<AuctionEntity>();
+            var userAuctions = await _dbUnitOfWork.UserAuctions.GetByUserId(userId);
 
-            // Create a specific DTO for this. Do not send the whole since is not needed
+            foreach (var userAuction in userAuctions)
+            {
+                auctions.Add(await _dbUnitOfWork.Auctions.Get(userAuction.AuctionId));
+            }
 
-            return Ok(usersInAuction);          
+            var auctionsDetails = auctions.Select(x => _auctionMapper.ToUserAuctionDetailsDto(x));
+
+            return Ok(auctionsDetails);          
         }
 
         /// <summary>
-        /// Starts an auction.
+        /// Allows the authorized user to join the auction with id <paramref name="auctionId"/>
         /// </summary>
-        [HttpPut]
-        [Route("join")]
-        public async Task<IActionResult> Join([FromQuery] int userId, [FromQuery] int auctionId)
+        /// <param name="auctionId">The id of the auction that the user wants to join</param>
+        [HttpPost]
+        [Route("join/{auctionId}")]
+        public async Task<IActionResult> Join(int auctionId)
         {
-            try
+            var userId = HttpContext.GetUserIdFromCookieClaim();
+            var user = await _dbUnitOfWork.Users.Get(userId);
+            var auction = await _dbUnitOfWork.Auctions.Get(auctionId);
+            var usersInAuction = await _dbUnitOfWork.UserAuctions.GetByAuctionId(auctionId);
+
+            if (usersInAuction.Select(x => x.UserId).Contains(userId))
             {
-                var auction = await _dbUnitOfWork.Auctions.Get(auctionId);
-                var usersInAuction = await _dbUnitOfWork.UserActions.GetByAuctionId(auctionId);
-
-                if (usersInAuction.Select(x => x.UserId).Contains(userId))
-                {
-                    return BadRequest("user already registered in auction");
-                }
-
-                if (auction.Status != Enums.AuctionStatus.Created)
-                {
-                    return BadRequest("cannot enter an auction if it's not in created state");
-                }
-
-                if (usersInAuction.Count() >= auction.UserAmount)
-                {
-                    return BadRequest("auction already full");
-                }
-
-                var userInAuction = new UserAuctionEntity() 
-                { 
-                    AuctionId = auctionId,
-                    UserId = userId,
-                    IsAdmin = false
-                };
-
-                await _dbUnitOfWork.UserActions.Create(userInAuction);
-                await _dbUnitOfWork.SaveChanges();
-
-                return Ok("Connection OK");
+                return BadRequest(new Error(ErrorCode.UserAlreadyInAuction, $"User '{user.Username}' already joined auction '{auction.Name}'"));
             }
-            catch (Exception ex)
+
+            if (auction.Status != AuctionStatus.Created)
             {
-                return BadRequest("couldn't perform the operation");
+                return BadRequest(new Error(ErrorCode.AuctionEnded, $"Cannot join auction '{auction.Name}' because is not in a proper state"));
             }
+
+            if (usersInAuction.Count() >= auction.UserAmount)
+            {
+                return BadRequest(new Error(ErrorCode.AuctionFull, $"Cannot join auction '{auction.Name}' because is already full"));
+            }
+
+            var userInAuction = new UserAuctionEntity() { IsAdmin = false, UserId = userId, AuctionId = auctionId };
+
+            await _dbUnitOfWork.UserAuctions.Create(userInAuction);
+            await _dbUnitOfWork.SaveChanges();
+
+            return Ok();
         }
 
         /// <summary>
-        /// Starts an auction.
+        /// Starts the auction identified by <paramref name="auctionId"/>
         /// </summary>
-        [HttpPut]
-        [Route("start")]
-        public async Task<IActionResult> Start([FromQuery] int auctionId)
+        /// <param name="auctionId">The id of the auction that the user wants to start</param>
+        [HttpPatch]
+        [Route("start/{auctionId}")]
+        public async Task<IActionResult> Start(int auctionId)
         {
-            try
+            var userId = HttpContext.GetUserIdFromCookieClaim();
+            var user = await _dbUnitOfWork.Users.Get(userId);
+            var auction = await _dbUnitOfWork.Auctions.Get(auctionId);
+            var usersInAuction = await _dbUnitOfWork.UserAuctions.GetByAuctionId(auctionId);
+
+            if (auction.UserAmount != usersInAuction.Count())
             {
-                var auction = await _dbUnitOfWork.Auctions.Get(auctionId);
-                var usersInAuction = await _dbUnitOfWork.UserActions.GetByAuctionId(auctionId);
-
-                if (auction.UserAmount != usersInAuction.Count())
-                {
-                    return BadRequest("no right amount of player");
-                }
-
-                // TODO Check that the admin is executing the operation
-
-                // TODO Check that all users are in lobby (maybe to do via signalR)
-
-                // TODO Make it random or user-defined
-                auction.UsersOrder = usersInAuction.Select(x => x.Id).ToArray();
-                auction.Status = Enums.AuctionStatus.Started;
-
-                _dbUnitOfWork.Auctions.Update(auction);
-                await _dbUnitOfWork.SaveChanges();
-
-                return Ok("Connection OK");
+                return BadRequest(new Error(ErrorCode.NotEnoughUsers, $"Auction '{auction.Name}' cannot be started because there is no enough users registered"));
             }
-            catch (Exception ex)
+
+            if (usersInAuction.Any(x => x.UserId == userId && x.IsAdmin))
             {
-                return BadRequest("couldn't perform the operation");
+                return BadRequest(new Error(ErrorCode.OnlyAdminCanStart, $"Auction '{auction.Name}' cannot be started unless from its administrator"));
             }
+
+            // TODO: Check that lobby is full
+
+            auction.Status = AuctionStatus.Started;
+            auction.UsersOrder = usersInAuction.Select(x => x.Id).ToArray();
+
+            _dbUnitOfWork.Auctions.Update(auction);
+            await _dbUnitOfWork.SaveChanges();
+
+            return Ok();
         }
     }
 }
