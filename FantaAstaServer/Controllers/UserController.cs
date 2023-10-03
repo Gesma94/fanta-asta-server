@@ -73,7 +73,7 @@ namespace FantaAstaServer.Controllers
                     City = createUserDto.City,
                     FavouriteTeam = createUserDto.FavouriteTeam,
                     DateOfBirth = createUserDto.DateOfBirth,
-                    CraetionDate = DateTime.UtcNow
+                    CreationDate = DateTime.UtcNow
                 };
 
                 await _dbUnitOfWork.Users.Create(newUserEntity);
@@ -96,7 +96,7 @@ namespace FantaAstaServer.Controllers
 
             if (user.Password == _passwordHasher.ComputeHash(password, user.Email))
             {
-                var claimIdentity = new ClaimsIdentity(new List<Claim>() { new(ClaimTypes.Name, username) }, "Login");
+                var claimIdentity = new ClaimsIdentity(new List<Claim>() { new(ClaimTypes.Name, username), new(ClaimTypes.NameIdentifier, user.Id.ToString()) }, "Login");
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimIdentity));
 
                 return Ok("Logged");
