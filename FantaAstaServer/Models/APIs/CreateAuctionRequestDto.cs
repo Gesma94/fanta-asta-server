@@ -2,11 +2,13 @@
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
 using FantaAstaServer.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace FantaAstaServer.Models.APIs
 {
     public class CreateAuctionRequestDto
     {
+        public string AdminUsername { get; set; }
         public string Name { get; set; }
         public int UserAmount { get; set; }
         public int InitialCredit { get; set; }
@@ -22,5 +24,6 @@ namespace FantaAstaServer.Models.APIs
         public int MidfielderMaxAmount { get; set; }
         public int StrikerMinAmount { get; set; }
         public int StrikerMaxAmount { get; set; }
+        public IFormFile FootballersFile { get; set; }
     }
 }
