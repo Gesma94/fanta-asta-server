@@ -6,6 +6,14 @@ namespace FantaAstaServer.Enums
     public enum ErrorCode
     {
         EmailAlreadyUsed,
-        UsernameAlreadyUsed
-}
+        UsernameAlreadyUsed,
+        UsernameNotFound,
+
+        UserAlreadyInAuction,
+        AuctionEnded,
+        AuctionFull,
+        NotEnoughUsers,
+        OnlyAdminCanStart,
+        UserNotRegisteredInAuction
+    }
 }
