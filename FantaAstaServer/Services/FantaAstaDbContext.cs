@@ -42,7 +42,7 @@ namespace FantaAstaServer.Services
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(_postgreSqlOptions.GetConnectionString());
-            dataSourceBuilder.MapEnum<AuctionMode>("auction_mode", new test());
+            // dataSourceBuilder.MapEnum<AuctionMode>("auction_mode", new test());
             var datasource = dataSourceBuilder.Build();
 
             optionsBuilder.UseNpgsql(datasource);
