@@ -27,6 +27,10 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Routing;
 using FantaAstaServer.Utils;
 using FantaAstaServer.Hubs;
+using Npgsql;
+using FantaAstaServer.Enums;
+using FantaAstaServer.Interfaces.Services.Mappers;
+using FantaAstaServer.Services.Mappers;
 
 var allSupportedCulturesInfo = new CultureInfo[] { new("en-US"), new("it-IT") };
 var supportedCultures = allSupportedCulturesInfo.Select(x => x.Name).ToArray();
@@ -73,6 +77,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddDbContext<FantaAstaDbContext>();
 
 builder.Services.AddTransient<IUserRepository, UserRepository>();
@@ -80,8 +86,9 @@ builder.Services.AddTransient<IAuctionRepository, AuctionRepository>();
 builder.Services.AddTransient<IBatchRepository, BatchRepository>();
 builder.Services.AddTransient<IFootballerRepository, FootballerRepository>();
 builder.Services.AddTransient<IOfferRepository, OfferRepository>();
-builder.Services.AddTransient<IUserActionRepository, UserActionRepository>();
+builder.Services.AddTransient<IUserAuctionRepository, UserAuctionRepository>();
 builder.Services.AddTransient<IDbUnitOfWork, DbUnitOfWork>();
+builder.Services.AddTransient<IAuctionMapper, AuctionMapper>();
 builder.Services.AddSingleton<IEmailSender, EmailSender>();
 
 builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
@@ -100,7 +107,7 @@ app.UseHttpsRedirection();
 
 
 app.UseExceptionHandler("/error");
-
+app.UseDeveloperExceptionPage();
 app.UseAuthentication();
 app.UseAuthorization();
 
