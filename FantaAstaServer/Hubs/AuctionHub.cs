@@ -27,7 +27,7 @@ namespace FantaAstaServer.Hubs
                 return;
             }
 
-            var allUserActions = await _dbUnitOfWork.UserActions.GetByAuctionId(auctionId);
+            var allUserActions = await _dbUnitOfWork.UserAuctions.GetByAuctionId(auctionId);
 
             if (!allUserActions.Any(x => x.UserId.Equals(userId)))
             {
