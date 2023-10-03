@@ -14,7 +14,7 @@ namespace FantaAstaServer.Models.Domain
         public string Email { get; set; }
         public Guid? ResetPasswordGuid { get; set; }
         public DateTime? ResetPasswordTimeStamp { get; set; }
-        public DateTime CraetionDate { get; set; }
+        public DateTime CreationDate { get; set; }
         [JsonConverter(typeof(DateOnlyJsonConverter))]
         public DateOnly? DateOfBirth { get; set; }
         public string FavouriteTeam { get; set; }
