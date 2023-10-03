@@ -2,6 +2,7 @@
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
 using FantaAstaServer.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Threading.Tasks;
 
 namespace FantaAstaServer.Interfaces
@@ -13,7 +14,8 @@ namespace FantaAstaServer.Interfaces
         IBatchRepository Batches { get; }
         IFootballerRepository Footballers { get; }
         IOfferRepository Offers { get; }
-        IUserActionRepository UserActions { get; }
+        IUserAuctionRepository UserAuctions { get; }
+        IDbContextTransaction BeginTransaction();
         Task<int> SaveChanges();
     }
 }

@@ -1,14 +1,29 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
+using FantaAstaServer.Enums;
 using FantaAstaServer.Models.Domain;
 using FantaAstaServer.Models.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using System;
 
 namespace FantaAstaServer.Services
 {
+    public class test : INpgsqlNameTranslator
+    {
+        public string TranslateMemberName(string clrName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string TranslateTypeName(string clrName)
+        {
+            throw new NotImplementedException();
+        }
+    }
     public class FantaAstaDbContext : DbContext
     {
         private readonly PostgreSqlOptions _postgreSqlOptions;
@@ -26,12 +41,18 @@ namespace FantaAstaServer.Services
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(connectionString: _postgreSqlOptions.GetConnectionString());
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(_postgreSqlOptions.GetConnectionString());
+            dataSourceBuilder.MapEnum<AuctionMode>("auction_mode", new test());
+            var datasource = dataSourceBuilder.Build();
+
+            optionsBuilder.UseNpgsql(datasource);
             base.OnConfiguring(optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasPostgresEnum<AuctionMode>();
+
             modelBuilder.Entity<UserEntity>(x =>
             {
                 x.ToTable("Users");
@@ -45,7 +66,7 @@ namespace FantaAstaServer.Services
                 x.Property(x => x.ResetPasswordTimeStamp).HasColumnName("reset_password_timestamp");
                 x.Property(x => x.Username).HasColumnName("username").IsRequired();
                 x.Property(x => x.Password).HasColumnName("password").IsRequired();
-                x.Property(x => x.CraetionDate).HasColumnName("creation_date").IsRequired();
+                x.Property(x => x.CreationDate).HasColumnName("creation_date").IsRequired();
                 x.Property(x => x.DateOfBirth).HasColumnName("date_of_birth");
                 x.Property(x => x.City).HasColumnName("city");
                 x.Property(x => x.FavouriteTeam).HasColumnName("favourite_team");

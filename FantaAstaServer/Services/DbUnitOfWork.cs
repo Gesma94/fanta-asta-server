@@ -3,6 +3,7 @@
 
 using FantaAstaServer.Interfaces;
 using FantaAstaServer.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Threading.Tasks;
 
@@ -15,15 +16,15 @@ namespace FantaAstaServer.Services
         private readonly IBatchRepository _batchRepository;
         private readonly IFootballerRepository _footballerRepository;
         private readonly IOfferRepository _offerRepository;
-        private readonly IUserActionRepository _userActionRepository;
+        private readonly IUserAuctionRepository _userActionRepository;
         private readonly FantaAstaDbContext _fantaAstaDbContext;
 
 
         public DbUnitOfWork(FantaAstaDbContext fantaAstaDbContext, IAuctionRepository auctionRepository, IBatchRepository batchRepository,
-            IFootballerRepository footballerRepository, IOfferRepository offerRepository, IUserActionRepository userActionRepository, IUserRepository userRepository)
+            IFootballerRepository footballerRepository, IOfferRepository offerRepository, IUserAuctionRepository userActionRepository, IUserRepository userRepository)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _offerRepository= offerRepository ?? throw new ArgumentNullException(nameof(offerRepository));
+            _offerRepository = offerRepository ?? throw new ArgumentNullException(nameof(offerRepository));
             _batchRepository = batchRepository ?? throw new ArgumentNullException(nameof(batchRepository));
             _auctionRepository = auctionRepository ?? throw new ArgumentNullException(nameof(auctionRepository));
             _fantaAstaDbContext = fantaAstaDbContext ?? throw new ArgumentNullException(nameof(fantaAstaDbContext));
@@ -37,12 +38,17 @@ namespace FantaAstaServer.Services
         public IBatchRepository Batches => _batchRepository;
         public IFootballerRepository Footballers => _footballerRepository;
         public IOfferRepository Offers => _offerRepository;
-        public IUserActionRepository UserActions => _userActionRepository;
+        public IUserAuctionRepository UserAuctions => _userActionRepository;
 
 
         public async Task<int> SaveChanges()
         {
             return await _fantaAstaDbContext.SaveChangesAsync();
+        }
+
+        public IDbContextTransaction BeginTransaction()
+        {
+            return _fantaAstaDbContext.Database.BeginTransaction();
         }
         
         public void Dispose()

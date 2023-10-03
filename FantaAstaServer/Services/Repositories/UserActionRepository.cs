@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace FantaAstaServer.Services.Repositories
 {
-    public class UserActionRepository : GenericRepository<UserAuctionEntity>, IUserActionRepository
+    public class UserAuctionRepository : GenericRepository<UserAuctionEntity>, IUserAuctionRepository
     {
-        public UserActionRepository(FantaAstaDbContext fantaAstaDbContext) : base(fantaAstaDbContext)
+        public UserAuctionRepository(FantaAstaDbContext fantaAstaDbContext) : base(fantaAstaDbContext)
         {
         }
 

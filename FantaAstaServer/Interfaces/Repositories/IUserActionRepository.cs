@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FantaAstaServer.Interfaces.Repositories
 {
-    public interface IUserActionRepository : IRepository<UserAuctionEntity>
+    public interface IUserAuctionRepository : IRepository<UserAuctionEntity>
     {
         Task<IQueryable<UserAuctionEntity>> GetByUserId(int userId);
         Task<IQueryable<UserAuctionEntity>> GetByAuctionId(int auctionId);
