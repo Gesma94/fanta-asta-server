@@ -9,6 +9,7 @@ using System;
 
 namespace FantaAstaServer.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ErrorController : Controller
     {
         private readonly ILogger _logger;
