@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantaAstaServer.Tests", "Fa
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{D2471868-C062-4C28-BAF2-CACDBE61D757}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantaAstaServer.Domain", "FantaAstaServer.Domain\FantaAstaServer.Domain.csproj", "{D6CEA292-D951-46BD-8107-2AB78CBD0CC7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantaAsta.Domain", "FantaAsta.Domain\FantaAsta.Domain.csproj", "{D6CEA292-D951-46BD-8107-2AB78CBD0CC7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D5490C02-079E-497C-93CF-830BDE8122F6}"
 EndProject

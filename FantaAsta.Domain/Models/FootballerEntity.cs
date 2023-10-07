@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Domain.Common;
-using FantaAstaServer.Domain.Enums;
+using FantaAsta.Domain.Common;
+using FantaAsta.Domain.Enums;
 
-namespace FantaAstaServer.Domain.Models;
+namespace FantaAsta.Domain.Models;
 
 public class FootballerEntity : AuditableEntity
 {

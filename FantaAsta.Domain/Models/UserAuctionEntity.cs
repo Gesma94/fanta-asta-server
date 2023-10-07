@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAstaServer.Domain.Common;
+using FantaAsta.Domain.Common;
 
-namespace FantaAstaServer.Domain.Models;
+namespace FantaAsta.Domain.Models;
 
 public class UserAuctionEntity : AuditableEntity
 {
