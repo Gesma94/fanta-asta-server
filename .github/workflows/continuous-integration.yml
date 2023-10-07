@@ -5,7 +5,8 @@ on:
     branches: [ "main" ]
 
 env:
-  DOTNET_VERSION: "6.x.x"
+  DOTNET_VERSION_6: "6.x.x"
+  DOTNET_VERSION_8: "8.x.x"
   AZURE_WEBAPP_NAME: "ex-fantasta"
   AZURE_WEBAPP_PACKAGE_PATH: "./publish"
 
@@ -17,10 +18,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Setup .NET
+    - name: Setup .NET6
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+        dotnet-version: ${{ env.DOTNET_VERSION_6 }}
+
+    - name: Setup .NET8
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION_8 }}
         
     - name: Restore
       run: dotnet restore ./FantaAstaServer.sln
