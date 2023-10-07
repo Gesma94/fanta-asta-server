@@ -7,6 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FantaAstaServer", "FantaAst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantaAstaServer.Tests", "FantaAstaServer.Tests\FantaAstaServer.Tests.csproj", "{69075A38-43A9-4626-81CE-8122186BD460}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{D2471868-C062-4C28-BAF2-CACDBE61D757}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantaAstaServer.Domain", "FantaAstaServer.Domain\FantaAstaServer.Domain.csproj", "{D6CEA292-D951-46BD-8107-2AB78CBD0CC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D5490C02-079E-497C-93CF-830BDE8122F6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,11 +27,18 @@ Global
 		{69075A38-43A9-4626-81CE-8122186BD460}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69075A38-43A9-4626-81CE-8122186BD460}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69075A38-43A9-4626-81CE-8122186BD460}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6CEA292-D951-46BD-8107-2AB78CBD0CC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6CEA292-D951-46BD-8107-2AB78CBD0CC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6CEA292-D951-46BD-8107-2AB78CBD0CC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6CEA292-D951-46BD-8107-2AB78CBD0CC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EFAD7FF1-EFD5-4D04-AFB7-EF6FAB85C174}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D6CEA292-D951-46BD-8107-2AB78CBD0CC7} = {D2471868-C062-4C28-BAF2-CACDBE61D757}
 	EndGlobalSection
 EndGlobal
