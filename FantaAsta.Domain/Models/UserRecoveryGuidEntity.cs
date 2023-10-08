@@ -8,5 +8,6 @@ namespace FantaAsta.Domain.Models;
 public class UserRecoveryGuidEntity : EntityBase
 {
     public Guid Guid { get; set; }
+    public int UserId { get; set; }
     public DateTime Timestamp { get; set; }
 }
