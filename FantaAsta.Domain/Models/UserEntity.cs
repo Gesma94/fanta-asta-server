@@ -5,7 +5,7 @@ using FantaAsta.Domain.Common;
 
 namespace FantaAsta.Domain.Models
 {
-    public class UserEntity : AuditableEntity 
+    public sealed class UserEntity : AuditableEntity 
     {
         public string Username { get; set; }
         public string Password { get; set; }

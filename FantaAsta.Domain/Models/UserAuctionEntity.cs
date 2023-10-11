@@ -5,7 +5,7 @@ using FantaAsta.Domain.Common;
 
 namespace FantaAsta.Domain.Models;
 
-public class UserAuctionEntity : AuditableEntity
+public sealed class UserAuctionEntity : AuditableEntity
 {
     public int UserId { get; set; }
     public int AuctionId { get; set; }

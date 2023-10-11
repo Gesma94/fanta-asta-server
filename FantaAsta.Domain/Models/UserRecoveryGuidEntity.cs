@@ -5,7 +5,7 @@ using FantaAsta.Domain.Common;
 
 namespace FantaAsta.Domain.Models;
 
-public class UserRecoveryGuidEntity : EntityBase
+public sealed class UserRecoveryGuidEntity : EntityBase
 {
     public Guid Guid { get; set; }
     public int UserId { get; set; }

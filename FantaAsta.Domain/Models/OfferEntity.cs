@@ -5,7 +5,7 @@ using FantaAsta.Domain.Common;
 
 namespace FantaAsta.Domain.Models;
 
-public class OfferEntity : AuditableEntity
+public sealed class OfferEntity : AuditableEntity
 {
     public int BatchId { get; set; }
     public int UserId { get; set; }

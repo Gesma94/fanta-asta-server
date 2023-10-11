@@ -5,7 +5,7 @@ using FantaAsta.Domain.Common;
 
 namespace FantaAsta.Domain.Models;
 
-public class FootballerUserEntity : AuditableEntity
+public sealed class FootballerUserEntity : AuditableEntity
 {
     public int UserId { get; set; }
     public int FootballerId { get; set; }

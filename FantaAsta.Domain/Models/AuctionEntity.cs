@@ -6,7 +6,7 @@ using FantaAsta.Domain.Enums;
 
 namespace FantaAsta.Domain.Models;
 
-public class AuctionEntity : AuditableEntity
+public sealed class AuctionEntity : AuditableEntity
 {
     public AuctionStatus Status { get; set; }
     public string Name { get; set; }

@@ -6,7 +6,7 @@ using FantaAsta.Domain.Enums;
 
 namespace FantaAsta.Domain.Models;
 
-public class BatchEntity : AuditableEntity
+public sealed class BatchEntity : AuditableEntity
 {
     public int AuctionId { get; set; }
     public int FootballerId { get; set; }
