@@ -10,4 +10,8 @@
       <ProjectReference Include="..\FantaAsta.Domain\FantaAsta.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.8" />
+    </ItemGroup>
+
 </Project>
