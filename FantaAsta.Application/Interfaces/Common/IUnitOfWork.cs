@@ -16,7 +16,7 @@ public interface IUnitOfWork
     IUserAuctionRepository UserAuctions { get; }
     IUserRecoveryGuidRepository UserRecoveryGuids { get; }
     IUserRepository Users { get; }
-    Task<IDbContextTransaction> BeginTransactionAsync();
-    Task RollbackTransactionAsync();
-    Task<int> SaveAsync();
+    IDbContextTransaction BeginTransaction();
+    void RollbackTransaction();
+    int Commit();
 }
