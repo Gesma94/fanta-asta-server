@@ -2,19 +2,20 @@
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
 using FantaAsta.Domain.Common;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FantaAsta.Application.Interfaces.Common;
 
 public interface IRepository<T> where T : EntityBase
 {
-    Task<bool> CreateAsync(T entity);
-    Task<bool> CreateAsync(IEnumerable<T> entities);
-    Task<bool> UpdateAsync(T entity);
-    Task<bool> UpdateAsync(IEnumerable<T> entities);
-    Task<bool> DeleteAsync(T entity);
-    Task<bool> DeleteAsync(int entityId);
-    Task<bool> DeleteAsync(IEnumerable<T> entities);
-    Task<bool> DeleteAsync(IEnumerable<int> entitiesIds);
-    Task<T> GetAsync(int entityId);
-    Task<IQueryable<T>> GetAllAsync();
+    EntityEntry<T> Add(T entity);
+    void AddRange(IEnumerable<T> entities);
+    EntityEntry<T> Update(T entity);
+    void UpdateRange(IEnumerable<T> entities);
+    EntityEntry<T> Delete(T entity);
+    EntityEntry<T> Delete(int entityId);
+    void DeleteRange(IEnumerable<T> entities);
+    void DeleteRange(IEnumerable<int> entitiesIds);
+    T Get(int entityId);
+    IQueryable<T> GetAll();
 }
