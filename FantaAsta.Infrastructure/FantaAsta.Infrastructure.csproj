@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>76ce6682-3ebc-4b7a-b1f3-6a977772e926</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,7 +14,16 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\FantaAsta.Application\FantaAsta.Application.csproj" />
       <ProjectReference Include="..\FantaAsta.Domain\FantaAsta.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="secrets.template.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
     
 </Project>
