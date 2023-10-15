@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
+using FantaAsta.Application.Interfaces.Common;
 using FantaAsta.Application.Interfaces.Repositories;
+using FantaAsta.Infrastructure.Common;
 using FantaAsta.Infrastructure.DbContexts;
 using FantaAsta.Infrastructure.Options;
 using FantaAsta.Infrastructure.Repositories;
@@ -20,6 +22,10 @@ public static class DependencyInjection
         services.AddTransient<IFootballerRepository, FootballerRepository>();
         services.AddTransient<IFootballerUserRepository, FootballerUserRepository>();
         services.AddTransient<IOfferRepository, OfferRepository>();
+        services.AddTransient<IUserAuctionRepository, UserAuctionRepository>();
+        services.AddTransient<IUserRecoveryGuidRepository, UserRecoveryGuidRepository>();
+        services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<IUnitOfWork, UnitOfWork>();
         
         return services;
     }

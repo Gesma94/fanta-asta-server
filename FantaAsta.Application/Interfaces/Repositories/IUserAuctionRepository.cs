@@ -8,5 +8,5 @@ namespace FantaAsta.Application.Interfaces.Repositories;
 
 public interface IUserAuctionRepository : IRepository<UserAuctionEntity>
 {
-    Task<IQueryable<UserAuctionEntity>> GetAllByAuctionIdAsync(int auctionId);
+    IQueryable<UserAuctionEntity> GetAllByAuctionId(int auctionId);
 }

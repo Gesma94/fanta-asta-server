@@ -3,6 +3,7 @@
 
 using FantaAsta.Application.Interfaces.Repositories;
 using FantaAsta.Domain.Models;
+using FantaAsta.Infrastructure.Common;
 using FantaAsta.Infrastructure.DbContexts;
 using Microsoft.EntityFrameworkCore;
 

@@ -8,6 +8,6 @@ namespace FantaAsta.Application.Interfaces.Repositories;
 
 public interface IUserRepository : IRepository<UserEntity>
 {
-    Task<UserEntity> GetByEmailAsync(string email);
-    Task<UserEntity> GetByUsernameAsync(string username);
+    UserEntity GetByEmail(string email);
+    UserEntity GetByUsername(string username);
 }

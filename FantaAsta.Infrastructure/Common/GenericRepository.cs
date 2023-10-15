@@ -7,7 +7,7 @@ using FantaAsta.Infrastructure.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace FantaAsta.Infrastructure.Repositories;
+namespace FantaAsta.Infrastructure.Common;
 
 public class GenericRepository<T> : IRepository<T> where T : EntityBase
 {

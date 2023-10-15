@@ -8,5 +8,5 @@ namespace FantaAsta.Application.Interfaces.Repositories;
 
 public interface IUserRecoveryGuidRepository : IRepository<UserRecoveryGuidEntity>
 {
-    Task<IQueryable<UserRecoveryGuidEntity>> GetAllByUserIdAsync(int userId);
+    UserRecoveryGuidEntity GetByUserId(int userId);
 }
