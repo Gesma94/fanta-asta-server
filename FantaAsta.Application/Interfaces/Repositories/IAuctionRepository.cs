@@ -8,5 +8,5 @@ namespace FantaAsta.Application.Interfaces.Repositories;
 
 public interface IAuctionRepository : IRepository<AuctionEntity>
 {
-    Task<AuctionEntity> GetByNameAsync(string auctionName);
+    AuctionEntity GetByName(string auctionName);
 }

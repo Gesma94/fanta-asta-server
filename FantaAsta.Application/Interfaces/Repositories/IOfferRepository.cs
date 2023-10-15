@@ -8,6 +8,7 @@ namespace FantaAsta.Application.Interfaces.Repositories;
 
 public interface IOfferRepository : IRepository<OfferEntity>
 {
-    Task<IQueryable<OfferEntity>> GetAllByBatchIdAsync(int batchId);
-    Task<OfferEntity> GetPreviousOfferAsync(OfferEntity offerEntity);
+    IQueryable<OfferEntity> GetAllByBatchId(int batchId);
+    OfferEntity GetPreviousOffer(int currentOfferId);
+    OfferEntity GetPreviousOffer(OfferEntity offerEntity);
 }

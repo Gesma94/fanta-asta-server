@@ -11,60 +11,60 @@ namespace FantaAsta.Infrastructure.Repositories;
 
 public class GenericRepository<T> : IRepository<T> where T : EntityBase
 {
-    private readonly PostgreSqlContext _postgreSqlContext;
+    protected readonly PostgreSqlContext PostgreSqlContext;
     
     public GenericRepository(PostgreSqlContext postgreSqlContext)
     {
-        _postgreSqlContext = postgreSqlContext ?? throw new ArgumentNullException(nameof(postgreSqlContext));
+        PostgreSqlContext = postgreSqlContext ?? throw new ArgumentNullException(nameof(postgreSqlContext));
     }
     
     public EntityEntry<T> Add(T entity)
     {
-        return _postgreSqlContext.Set<T>().Add(entity);
+        return PostgreSqlContext.Set<T>().Add(entity);
     }
 
     public void AddRange(IEnumerable<T> entities)
     {
-        _postgreSqlContext.Set<T>().AddRange(entities);
+        PostgreSqlContext.Set<T>().AddRange(entities);
     }
 
     public EntityEntry<T> Update(T entity)
     {
-        return _postgreSqlContext.Set<T>().Update(entity);
+        return PostgreSqlContext.Set<T>().Update(entity);
     }
 
     public void UpdateRange(IEnumerable<T> entities)
     {
-        _postgreSqlContext.Set<T>().UpdateRange(entities);
+        PostgreSqlContext.Set<T>().UpdateRange(entities);
     }
 
     public EntityEntry<T> Delete(T entity)
     {
-        return _postgreSqlContext.Set<T>().Remove(entity);
+        return PostgreSqlContext.Set<T>().Remove(entity);
     }
 
     public EntityEntry<T> Delete(int entityId)
     {
-        return _postgreSqlContext.Set<T>().Remove(Get(entityId));
+        return PostgreSqlContext.Set<T>().Remove(Get(entityId));
     }
 
     public void DeleteRange(IEnumerable<T> entities)
     {
-        _postgreSqlContext.Set<T>().RemoveRange(entities);
+        PostgreSqlContext.Set<T>().RemoveRange(entities);
     }
 
     public void DeleteRange(IEnumerable<int> entitiesIds)
     {
-        _postgreSqlContext.Set<T>().RemoveRange(entitiesIds.Select(Get));
+        PostgreSqlContext.Set<T>().RemoveRange(entitiesIds.Select(Get));
     }
     
     public T Get(int entityId)
     {
-        return _postgreSqlContext.Set<T>().AsNoTracking().FirstOrDefault(x => x.Id.Equals(entityId));
+        return PostgreSqlContext.Set<T>().AsNoTracking().FirstOrDefault(x => x.Id.Equals(entityId));
     }
 
     public IQueryable<T> GetAll()
     {
-        return _postgreSqlContext.Set<T>().AsNoTracking();
+        return PostgreSqlContext.Set<T>().AsNoTracking();
     }
 }
