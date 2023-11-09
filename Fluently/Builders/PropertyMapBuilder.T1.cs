@@ -10,7 +10,7 @@ namespace Fluently.Builders
     public sealed class PropertyMapBuilder<T> : IPropertyMapBuilder
     {
         private readonly PropertyMapper _propertyMapper = new PropertyMapper();
-        
+  
         public PropertyMapper GetPropertyMapper()
         {
             return _propertyMapper;
@@ -26,6 +26,12 @@ namespace Fluently.Builders
         {
             _propertyMapper.IsColumnReadOnly = true;
             return this;
+        }
+        
+        public PropertyMapBuilder<T> IsKey()
+        {
+            _propertyMapper.IsKey = true;
+            return IsReadOnly();
         }
 
         public PropertyMapBuilder<T> HasColumnName(string columnName)

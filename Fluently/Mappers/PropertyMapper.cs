@@ -11,5 +11,6 @@ namespace Fluently.Mappers
         public string ColumnName { get; set; }
         public bool IsColumnReadOnly { get; set; } = false;
         public IFluentlyConverter CustomConverter { get; set; }
+        public bool IsKey { get; set; }
     }
 }

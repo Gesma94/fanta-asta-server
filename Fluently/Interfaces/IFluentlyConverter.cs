@@ -13,6 +13,6 @@ namespace Fluently.Interfaces
     {
         Type GetEntityType();
         object FromDatabaseValue(IDataReader reader, int ordinal);
-        object ToDatabaseValue(object value);
+        (string, IDbDataParameter) ToDatabaseValue(object pocoValue, Func<IDbDataParameter> dbParameterFactory, string parameterName);
     }
 }

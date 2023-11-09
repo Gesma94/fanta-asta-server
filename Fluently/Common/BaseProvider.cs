@@ -22,22 +22,33 @@ namespace Fluently.Common
             _converters = converters  ?? throw new ArgumentNullException(nameof(converters));
         }
 
-        public abstract IEnumerable<T> Query<T>(IDbCommand dbCommand);
+        public abstract IEnumerable<T> Query<T>(Func<IDbCommand> dbCommandFactory);
 
-        public abstract IEnumerable<T> Query<T>(IDbCommand dbCommand, string sqlString);
+        public abstract IEnumerable<T> Query<T>(Func<IDbCommand> dbCommandFactory, string sqlString);
 
-        public abstract int Insert<T>(IDbCommand dbCommand, T entity);
+        public int Insert<T>(Func<IDbCommand> dbCommandFactory, T entity)
+        {
+            return InsertRange(dbCommandFactory, new[] { entity });
+        }
 
-        public abstract int InsertRange<T>(IDbCommand dbCommand, IEnumerable<T> entities);
+        public abstract int InsertRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities);
 
-        public abstract void Delete<T>(IDbCommand dbCommand, T entity);
+        public int Delete<T>(Func<IDbCommand> dbCommandFactory, T entity)
+        {
+            return DeleteRange(dbCommandFactory, new[] { entity });
+        }
 
-        public abstract void DeleteRange<T>(IDbCommand dbCommand, IEnumerable<T> entities);
+        public abstract int DeleteRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities);
 
-        public abstract void Update<T>(IDbCommand dbCommand, T entity);
+        public int Update<T>(Func<IDbCommand> dbCommandFactory, T entity)
+        {
+            return UpdateRange(dbCommandFactory, new[] { entity });
+        }
 
-        public abstract void UpdateRange<T>(IDbCommand dbCommand, IEnumerable<T> entities);
+        public abstract int UpdateRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities);
         
+        protected abstract object GetPocoValue(Type propertyType, IDataRecord reader, int i);
+
         protected EntityMapper GetMapperOf<T>()
         {
             var mapBuilder = _mappers.Where(x => x.PocoType == typeof(T)).ToArray();
@@ -55,7 +66,7 @@ namespace Fluently.Common
             return _mappers.Single();
         }
         
-        protected object GetPocoValue<TEntity>(PropertyMapper propertyMapper, IDataReader reader, int i)
+        protected object GetPocoValueBase<TEntity>(PropertyMapper propertyMapper, IDataReader reader, int i)
         {
             if (reader.IsDBNull(i))
             {
@@ -67,52 +78,63 @@ namespace Fluently.Common
 
             return customConverter != null
                 ? customConverter.FromDatabaseValue(reader, i)
-                : GetValue(propertyInfo.PropertyType, reader, i);
+                : GetPocoValue(propertyInfo.PropertyType, reader, i);
+        }
+        
+        protected (string, IDbDataParameter) GetDbValueBase<TEntity>(Func<IDbDataParameter> dbParameterFactory, TEntity entity, int index, PropertyMapper propertyMapper)
+        {
+            var propertyInfo = GetPropertyInfo<TEntity>(propertyMapper.PropertyName);
+            
+            var pocoValue = propertyInfo.GetValue(entity);
+            var parameterName = $"@{propertyMapper.ColumnName}_{index}";
+            var customConverter = GetTypeConverter(propertyMapper.CustomConverter, propertyInfo.PropertyType);
+
+            return customConverter != null
+                ? customConverter.ToDatabaseValue(pocoValue, dbParameterFactory, parameterName)
+                : GetDbValue<TEntity>(dbParameterFactory, propertyInfo.PropertyType, pocoValue, parameterName);
         }
 
-        private static object GetValue(Type propertyType, IDataRecord reader, int i)
+        protected abstract (string, IDbDataParameter) GetDbValue<TEntity>(Func<IDbDataParameter> dbParameterFactory, Type propertyType, object pocoValue, string parameterName);
+
+        protected DbType GetDbType(Type propertyType)
         {
-            if (reader.IsDBNull(i))
-            {
-                return null;
-            }
-            
             if (propertyType == typeof(short))
             {
-                return reader.GetInt16(i);
+                return DbType.Int16;
             }
             if (propertyType == typeof(int))
             {
-                return reader.GetInt32(i);
+                return DbType.Int32;
             }
             if (propertyType == typeof(string))
             {
-                return reader.GetString(i);
+                return DbType.String;
             }
             if (propertyType == typeof(bool))
             {
-                return reader.GetBoolean(i);
+                return DbType.Boolean;
             }
             if (propertyType == typeof(byte))
             {
-                return reader.GetByte(i);
+                return DbType.Byte;
             }
             if (propertyType == typeof(DateTimeOffset))
             {
-                return new DateTimeOffset(reader.GetDateTime(i));
+                return DbType.DateTimeOffset;
             }
-
-            var value = reader.GetValue(i);
-
-            if (propertyType.IsInstanceOfType(value))
+            if (propertyType == typeof(DateTime))
             {
-                return value;
+                return DbType.DateTime;
+            }
+            if (propertyType == typeof(int[]))
+            {
+                return DbType.Object;
             }
 
-            throw new InvalidOperationException($"unsupported <{propertyType.Name}> type");
+            throw new InvalidOperationException($"cannot find DbType of type <{propertyType.Name}>");
         }
-
-        internal protected static PropertyInfo GetPropertyInfo<TEntity>(string propertyName)
+        
+        protected static PropertyInfo GetPropertyInfo<TEntity>(string propertyName)
         {
             return typeof(TEntity).GetProperty(propertyName)
                 ?? throw new InvalidOperationException($"cannot retrieve property '{propertyName}' in type <{typeof(TEntity).Name}>");

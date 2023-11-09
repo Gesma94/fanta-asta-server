@@ -24,6 +24,17 @@ namespace Fluently.Builders
         
             return this;
         }
+        
+        public PropertyMapBuilder<TProperty> HasKey<TProperty>(Expression<Func<T, TProperty>> propertyExpression)
+        {
+            var propertyBuilder = new PropertyMapBuilder<TProperty>();
+
+            propertyBuilder.IsKey();
+            propertyBuilder.HasPropertyName(GetPropertyName(propertyExpression));
+            _entityMapper.PropertyMappers.Add(propertyBuilder.GetPropertyMapper());
+        
+            return propertyBuilder;
+        }
 
         public PropertyMapBuilder<TProperty> HasProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression)
         {

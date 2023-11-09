@@ -17,45 +17,44 @@ namespace Fluently.Common
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         }
 
-        public IEnumerable<T> Query<T>(IDbCommand dbCommand)
+        public IEnumerable<T> Query<T>(Func<IDbCommand> dbCommandFactory)
         {
-            return _provider.Query<T>(dbCommand);
+            return _provider.Query<T>(dbCommandFactory);
         }
 
-        public IEnumerable<T> Query<T>(IDbCommand dbCommand, string sqlString)
+        public IEnumerable<T> Query<T>(Func<IDbCommand> dbCommandFactory, string sqlString)
         {
-            return _provider.Query<T>(dbCommand, sqlString);
+            return _provider.Query<T>(dbCommandFactory, sqlString);
         }
 
-        public int Insert<T>(IDbCommand dbCommand, T entity)
+        public int Insert<T>(Func<IDbCommand> dbCommandFactory, T entity)
         {
-            return _provider.Insert(dbCommand, entity);
+            return _provider.Insert(dbCommandFactory, entity);
         }
 
-        public int InsertRange<T>(IDbCommand dbCommand, IEnumerable<T> entities)
+        public int InsertRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities)
         {
-            return _provider.InsertRange(dbCommand, entities);
-
+            return _provider.InsertRange(dbCommandFactory, entities);
         }
 
-        public void Delete<T>(IDbCommand dbCommand, T entity)
+        public int Delete<T>(Func<IDbCommand> dbCommandFactory, T entity)
         {
-            _provider.Delete(dbCommand, entity);
+            return _provider.Delete(dbCommandFactory, entity);
         }
 
-        public void DeleteRange<T>(IDbCommand dbCommand, IEnumerable<T> entities)
+        public int DeleteRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities)
         {
-            _provider.DeleteRange(dbCommand, entities);
+            return _provider.DeleteRange(dbCommandFactory, entities);
         }
 
-        public void Update<T>(IDbCommand dbCommand, T entity)
+        public int Update<T>(Func<IDbCommand> dbCommandFactory, T entity)
         {
-            _provider.Update(dbCommand, entity);
+            return _provider.Update(dbCommandFactory, entity);
         }
 
-        public void UpdateRange<T>(IDbCommand dbCommand, IEnumerable<T> entities)
+        public int UpdateRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities)
         {
-            _provider.UpdateRange(dbCommand, entities);
+            return _provider.UpdateRange(dbCommandFactory, entities);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Gesma94. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -8,13 +9,13 @@ namespace Fluently.Interfaces
 {
     public interface IFluentlyContext
     {
-        IEnumerable<T> Query<T>(IDbCommand dbCommand);
-        IEnumerable<T> Query<T>(IDbCommand dbCommand, string sqlString);
-        int Insert<T>(IDbCommand dbCommand, T entity);
-        int InsertRange<T>(IDbCommand dbCommand, IEnumerable<T> entities);
-        void Delete<T>(IDbCommand dbCommand, T entity);
-        void DeleteRange<T>(IDbCommand dbCommand, IEnumerable<T> entities);
-        void Update<T>(IDbCommand dbCommand, T entity);
-        void UpdateRange<T>(IDbCommand dbCommand, IEnumerable<T> entities);
+        IEnumerable<T> Query<T>(Func<IDbCommand> dbCommandFactory);
+        IEnumerable<T> Query<T>(Func<IDbCommand> dbCommandFactory, string sqlString);
+        int Insert<T>(Func<IDbCommand> dbCommandFactory, T entity);
+        int InsertRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities);
+        int Delete<T>(Func<IDbCommand> dbCommandFactory, T entity);
+        int DeleteRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities);
+        int Update<T>(Func<IDbCommand> dbCommandFactory, T entity);
+        int UpdateRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities);
     }
 }

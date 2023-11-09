@@ -19,17 +19,17 @@ namespace Fluently.Common
             return FromDatabase(reader, ordinal);
         }
 
-        public object ToDatabaseValue(object value)
+        public (string, IDbDataParameter) ToDatabaseValue(object pocoValue, Func<IDbDataParameter> dbParameterFactory, string parameterName)
         {
-            if (!(value is T typedValue))
+            if (pocoValue is not T typedValue)
             {
-                throw new Exception($"value '{value}' is not of type <{typeof(T).Name}>");
+                throw new Exception($"value '{pocoValue}' is not of type <{typeof(T).Name}>");
             }
             
-            return ToDatabase(typedValue);
+            return ToDatabase(typedValue, dbParameterFactory, parameterName);
         }
         
-        protected abstract object ToDatabase(T value);
+        protected abstract (string, IDbDataParameter) ToDatabase(T pocoValue, Func<IDbDataParameter> dbParameterFactory, string parameterName);
         protected abstract T FromDatabase(IDataReader reader, int ordinal);
     }
 }
