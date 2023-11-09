@@ -13,6 +13,8 @@ namespace Fluently.Providers
 {
     public class PostgreSqlProvider : BaseProvider
     {
+        private static Dictionary<Type, DbType> _typeToDbTypeMap;
+        
         public PostgreSqlProvider(IEnumerable<EntityMapper> mappers, IEnumerable<IFluentlyConverter> converters) : base(mappers, converters)
         {
         }
@@ -125,40 +127,13 @@ namespace Fluently.Providers
             {
                 return null;
             }
-            
-            if (propertyType == typeof(short))
-            {
-                return reader.GetInt16(i);
-            }
-            if (propertyType == typeof(int))
-            {
-                return reader.GetInt32(i);
-            }
-            if (propertyType == typeof(string))
-            {
-                return reader.GetString(i);
-            }
-            if (propertyType == typeof(bool))
-            {
-                return reader.GetBoolean(i);
-            }
-            if (propertyType == typeof(byte))
-            {
-                return reader.GetByte(i);
-            }
+
             if (propertyType == typeof(DateTimeOffset))
             {
                 return new DateTimeOffset(reader.GetDateTime(i));
             }
 
-            var value = reader.GetValue(i);
-
-            if (propertyType.IsInstanceOfType(value))
-            {
-                return value;
-            }
-
-            throw new InvalidOperationException($"unsupported <{propertyType.Name}> type");
+            return reader.GetValue(i);
         }
 
         protected override (string, IDbDataParameter) GetDbValue<TEntity>(Func<IDbDataParameter> dbParameterFactory, Type propertyType, object pocoValue, string parameterName)
@@ -170,6 +145,56 @@ namespace Fluently.Providers
             dbParameter.Value = pocoValue ?? DBNull.Value;
             
             return (parameterName, dbParameter);
+        }
+
+        protected override Dictionary<Type, DbType> GetTypeToDbTypeMap()
+        {
+            if (_typeToDbTypeMap != null)
+            {
+                return _typeToDbTypeMap;
+            }
+            
+            return _typeToDbTypeMap = new Dictionary<Type, DbType>
+            {
+                [typeof(byte)] = DbType.Byte,
+                [typeof(sbyte)] = DbType.SByte,
+                [typeof(short)] = DbType.Int16,
+                [typeof(ushort)] = DbType.UInt16,
+                [typeof(int)] = DbType.Int32,
+                [typeof(uint)] = DbType.UInt32,
+                [typeof(long)] = DbType.Int64,
+                [typeof(ulong)] = DbType.UInt64,
+                [typeof(float)] = DbType.Single,
+                [typeof(double)] = DbType.Double,
+                [typeof(decimal)] = DbType.Decimal,
+                [typeof(bool)] = DbType.Boolean,
+                [typeof(string)] = DbType.String,
+                [typeof(char)] = DbType.StringFixedLength,
+                [typeof(Guid)] = DbType.Guid,
+                [typeof(DateTime)] = DbType.DateTime,
+                [typeof(DateTimeOffset)] = DbType.DateTimeOffset,
+                [typeof(TimeSpan)] = DbType.Time,
+                [typeof(int[])] = DbType.Object,
+                [typeof(byte[])] = DbType.Binary,
+                [typeof(byte?)] = DbType.Byte,
+                [typeof(sbyte?)] = DbType.SByte,
+                [typeof(short?)] = DbType.Int16,
+                [typeof(ushort?)] = DbType.UInt16,
+                [typeof(int?)] = DbType.Int32,
+                [typeof(uint?)] = DbType.UInt32,
+                [typeof(long?)] = DbType.Int64,
+                [typeof(ulong?)] = DbType.UInt64,
+                [typeof(float?)] = DbType.Single,
+                [typeof(double?)] = DbType.Double,
+                [typeof(decimal?)] = DbType.Decimal,
+                [typeof(bool?)] = DbType.Boolean,
+                [typeof(char?)] = DbType.StringFixedLength,
+                [typeof(Guid?)] = DbType.Guid,
+                [typeof(DateTime?)] = DbType.DateTime,
+                [typeof(DateTimeOffset?)] = DbType.DateTimeOffset,
+                [typeof(TimeSpan?)] = DbType.Time,
+                [typeof(object)] = DbType.Object
+            };
         }
     }
 }

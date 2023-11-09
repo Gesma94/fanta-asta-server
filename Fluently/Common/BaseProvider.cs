@@ -98,42 +98,13 @@ namespace Fluently.Common
 
         protected DbType GetDbType(Type propertyType)
         {
-            if (propertyType == typeof(short))
-            {
-                return DbType.Int16;
-            }
-            if (propertyType == typeof(int))
-            {
-                return DbType.Int32;
-            }
-            if (propertyType == typeof(string))
-            {
-                return DbType.String;
-            }
-            if (propertyType == typeof(bool))
-            {
-                return DbType.Boolean;
-            }
-            if (propertyType == typeof(byte))
-            {
-                return DbType.Byte;
-            }
-            if (propertyType == typeof(DateTimeOffset))
-            {
-                return DbType.DateTimeOffset;
-            }
-            if (propertyType == typeof(DateTime))
-            {
-                return DbType.DateTime;
-            }
-            if (propertyType == typeof(int[]))
-            {
-                return DbType.Object;
-            }
-
-            throw new InvalidOperationException($"cannot find DbType of type <{propertyType.Name}>");
+            return GetTypeToDbTypeMap().TryGetValue(propertyType, out var result)
+                ? result
+                : throw new InvalidOperationException($"cannot find DbType of type <{propertyType.Name}>");
         }
-        
+
+        protected abstract Dictionary<Type, DbType> GetTypeToDbTypeMap();
+
         protected static PropertyInfo GetPropertyInfo<TEntity>(string propertyName)
         {
             return typeof(TEntity).GetProperty(propertyName)
