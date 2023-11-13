@@ -8,6 +8,6 @@ namespace FantaAsta.Application.Interfaces.Repositories;
 
 public interface IBatchRepository : IRepository<BatchEntity>
 {
-    IQueryable<BatchEntity> GetAllByAuctionId(int auctionId);
+    IEnumerable<BatchEntity> GetAllByAuctionId(int auctionId);
     BatchEntity GetByFootballerId(int footballerId);
 }

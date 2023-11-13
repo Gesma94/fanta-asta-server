@@ -8,14 +8,14 @@ namespace FantaAsta.Application.Interfaces.Common;
 
 public interface IRepository<T> where T : EntityBase
 {
-    EntityEntry<T> Add(T entity);
-    void AddRange(IEnumerable<T> entities);
-    EntityEntry<T> Update(T entity);
-    void UpdateRange(IEnumerable<T> entities);
-    EntityEntry<T> Delete(T entity);
-    EntityEntry<T> Delete(int entityId);
-    void DeleteRange(IEnumerable<T> entities);
-    void DeleteRange(IEnumerable<int> entitiesIds);
+    int Add(T entity);
+    int AddRange(IEnumerable<T> entities);
+    int Update(T entity);
+    int UpdateRange(IEnumerable<T> entities);
+    int Delete(T entity);
+    int Delete(int entityId);
+    int DeleteRange(IEnumerable<T> entities);
+    int DeleteRange(IEnumerable<int> entitiesIds);
     T Get(int entityId);
-    IQueryable<T> GetAll();
+    IEnumerable<T> GetAll();
 }

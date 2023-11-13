@@ -8,7 +8,7 @@ namespace FantaAsta.Application.Interfaces.Repositories;
 
 public interface IOfferRepository : IRepository<OfferEntity>
 {
-    IQueryable<OfferEntity> GetAllByBatchId(int batchId);
+    IEnumerable<OfferEntity> GetAllByBatchId(int batchId);
     OfferEntity GetPreviousOffer(int currentOfferId);
     OfferEntity GetPreviousOffer(OfferEntity offerEntity);
 }
