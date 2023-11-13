@@ -56,7 +56,7 @@ CREATE TABLE "Auctions" (
     "mode" auction_mode NOT NULL,
     "call_order" auction_call_order NOT NULL,
     "users_order" integer[],
-    "offer_based_timeout_cal_ms" integer,
+    "offer_based_timeout_call_ms" integer,
     "goalkeeper_min_amount" integer NOT NULL,
     "goalkeeper_max_amount" integer NOT NULL,
     "defender_min_amount" integer NOT NULL,
