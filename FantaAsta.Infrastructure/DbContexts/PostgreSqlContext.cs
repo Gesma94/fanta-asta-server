@@ -1,60 +1,93 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
-using FantaAsta.Domain.Common;
-using FantaAsta.Domain.Models;
+using System.Data;
 using FantaAsta.Infrastructure.Options;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Npgsql;
 
 namespace FantaAsta.Infrastructure.DbContexts;
 
-public class PostgreSqlContext : DbContext
+public class PostgreSqlContext : IDisposable
 {
-    private readonly PostgreSqlOptions _postgreSqlOptions;
-    
-    public PostgreSqlContext(IOptions<PostgreSqlOptions> postgreSqlConfig, DbContextOptions<PostgreSqlContext> dbContextOptions)
-        : base(dbContextOptions)
-    { 
-         _postgreSqlOptions = postgreSqlConfig?.Value ?? throw new ArgumentNullException(nameof(postgreSqlConfig));
-    }
-
-    public DbSet<UserEntity> Users { get; set; }
-    public DbSet<OfferEntity> Offers { get; set; }
-    public DbSet<BatchEntity> Batches { get; set; }
-    public DbSet<AuctionEntity> Auctions { get; set; }
-    public DbSet<FootballerEntity> Footballers { get; set; }
-    public DbSet<UserAuctionEntity> UserAuctions { get; set; }
-    public DbSet<FootballerUserEntity> FootballerUsers { get; set; }
-    public DbSet<UserRecoveryGuidEntity> UserRecoveryGuids { get; set; }
-    
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    public PostgreSqlContext(IOptions<PostgreSqlOptions> postgreSqlConfig)
     {
-        foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+        if (postgreSqlConfig?.Value == null)
         {
-            switch (entry.State)
-            {
-                case EntityState.Added:
-                    entry.Entity.CreatedTime = DateTimeOffset.UtcNow;
-                    entry.Entity.LastModifiedTime = DateTimeOffset.UtcNow;
-                    break;
-                case EntityState.Modified:
-                    entry.Entity.LastModifiedTime = DateTimeOffset.UtcNow;
-                    break;
-            }
+            throw new ArgumentNullException(nameof(postgreSqlConfig));
         }
 
-        return base.SaveChangesAsync(cancellationToken);
+        DbConnection = new NpgsqlConnection(postgreSqlConfig.Value.GetConnectionString());
+        DbConnection.Open();
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public IDbConnection DbConnection { get; private set; }
+    public IDbTransaction DbTransaction { get; private set; }
+
+    public IDbCommand CreateCommand()
     {
-        optionsBuilder.UseNpgsql(_postgreSqlOptions.GetConnectionString());
-        base.OnConfiguring(optionsBuilder);
+        var command = DbConnection.CreateCommand();
+
+        if (DbTransaction != null)
+        {
+            command.Transaction = DbTransaction;
+        }
+
+        return command;
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public IDbTransaction BeginTransaction()
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PostgreSqlContext).Assembly);
-    }    
+        if (DbTransaction != null)
+        {
+            throw new InvalidOperationException("cannot begin a transaction when one is already started");
+        }
+        
+        return DbTransaction = DbConnection.BeginTransaction();
+    }
+
+    public void Commit()
+    {
+        if (DbTransaction == null)
+        {
+            throw new InvalidOperationException("cannot commit if no transaction has begun");
+        }
+        
+        DbTransaction.Commit();
+        DbTransaction.Dispose();
+
+        DbTransaction = null;
+    }
+
+    public void Rollback()
+    {
+        if (DbTransaction == null)
+        {
+            throw new InvalidOperationException("cannot rollback if no transaction has begun");
+        }
+        
+        DbTransaction.Rollback();
+        DbTransaction.Dispose();
+
+        DbTransaction = null;
+    }
+    
+    public void Dispose()
+    {
+        if (DbTransaction != null)
+        {
+            DbTransaction.Rollback();
+            DbTransaction.Dispose();
+            DbTransaction = null;
+        }
+
+        if (DbConnection != null)
+        {
+            DbConnection.Close();
+            DbConnection.Dispose();
+            DbConnection = null;
+        }
+        
+        GC.SuppressFinalize(this);
+    }
 }
