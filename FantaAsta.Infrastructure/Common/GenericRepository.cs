@@ -4,67 +4,68 @@
 using FantaAsta.Application.Interfaces.Common;
 using FantaAsta.Domain.Common;
 using FantaAsta.Infrastructure.DbContexts;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Fluently.Interfaces;
 
 namespace FantaAsta.Infrastructure.Common;
 
-public class GenericRepository<T> : IRepository<T> where T : EntityBase
+public abstract class GenericRepository<T> : IRepository<T> where T : EntityBase
 {
     protected readonly PostgreSqlContext PostgreSqlContext;
+    protected readonly IFluentlyContext FluentlyContext;
     
-    public GenericRepository(PostgreSqlContext postgreSqlContext)
+    protected GenericRepository(PostgreSqlContext postgreSqlContext, IFluentlyContext fluentlyContext)
     {
+        FluentlyContext = fluentlyContext ?? throw new ArgumentNullException(nameof(fluentlyContext));
         PostgreSqlContext = postgreSqlContext ?? throw new ArgumentNullException(nameof(postgreSqlContext));
     }
     
-    public EntityEntry<T> Add(T entity)
+    public int Add(T entity)
     {
-        return PostgreSqlContext.Set<T>().Add(entity);
+        return FluentlyContext.Insert(PostgreSqlContext.CreateCommand, entity);
     }
 
-    public void AddRange(IEnumerable<T> entities)
+    public int AddRange(IEnumerable<T> entities)
     {
-        PostgreSqlContext.Set<T>().AddRange(entities);
+        return FluentlyContext.InsertRange(PostgreSqlContext.CreateCommand, entities);
     }
 
-    public EntityEntry<T> Update(T entity)
+    public int Update(T entity)
     {
-        return PostgreSqlContext.Set<T>().Update(entity);
+        return FluentlyContext.Update(PostgreSqlContext.CreateCommand, entity);
     }
 
-    public void UpdateRange(IEnumerable<T> entities)
+    public int UpdateRange(IEnumerable<T> entities)
     {
-        PostgreSqlContext.Set<T>().UpdateRange(entities);
+        return FluentlyContext.UpdateRange(PostgreSqlContext.CreateCommand, entities);
     }
 
-    public EntityEntry<T> Delete(T entity)
+    public int Delete(T entity)
     {
-        return PostgreSqlContext.Set<T>().Remove(entity);
+        return FluentlyContext.Delete(PostgreSqlContext.CreateCommand, entity);
     }
 
-    public EntityEntry<T> Delete(int entityId)
+    public int Delete(int entityId)
     {
-        return PostgreSqlContext.Set<T>().Remove(Get(entityId));
+        return Delete(Get(entityId));
     }
 
-    public void DeleteRange(IEnumerable<T> entities)
+    public int DeleteRange(IEnumerable<T> entities)
     {
-        PostgreSqlContext.Set<T>().RemoveRange(entities);
+        return FluentlyContext.DeleteRange(PostgreSqlContext.CreateCommand, entities);
     }
 
-    public void DeleteRange(IEnumerable<int> entitiesIds)
+    public int DeleteRange(IEnumerable<int> entitiesIds)
     {
-        PostgreSqlContext.Set<T>().RemoveRange(entitiesIds.Select(Get));
+        return DeleteRange(entitiesIds.Select(Get));
     }
     
     public T Get(int entityId)
     {
-        return PostgreSqlContext.Set<T>().AsNoTracking().FirstOrDefault(x => x.Id.Equals(entityId));
+        return FluentlyContext.Query<T>(PostgreSqlContext.CreateCommand).FirstOrDefault(x => x.Id.Equals(entityId));
     }
 
-    public IQueryable<T> GetAll()
+    public IEnumerable<T> GetAll()
     {
-        return PostgreSqlContext.Set<T>().AsNoTracking();
+        return FluentlyContext.Query<T>(PostgreSqlContext.CreateCommand);
     }
 }
