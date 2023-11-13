@@ -89,9 +89,9 @@ namespace Fluently.Providers
             }
 
             dbCommand.CommandText = $"INSERT INTO \"{mapBuilder.TableName}\" ({string.Join(", ", columnsName)}) VALUES {string.Join(", ", valueStatements)}";
+            // INSERT INTO "Auctions" (col1, col2, col3) VALUES (@col1_param0, @col2_param0:custom_type, @col3_param0), (@col1_param1, @col2_param1:custom_type, @col3_param1)
 
             return dbCommand.ExecuteNonQuery();
-           
         }
 
         public override int DeleteRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities)
@@ -118,7 +118,43 @@ namespace Fluently.Providers
         
         public override int UpdateRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities)
         {
-            throw new NotImplementedException();
+            entities = entities.ToArray();
+            
+            var mapBuilder = GetMapperOf<T>();
+            var writableColumns = mapBuilder.PropertyMappers.Where(x => !x.IsColumnReadOnly).ToArray();
+            var columnsName = writableColumns.Select(x => x.ColumnName).ToArray();
+            var keyColumn = mapBuilder.PropertyMappers.Single(x => x.IsKey);
+            var updateStatements = new List<string>();
+            using var dbCommand = dbCommandFactory();
+
+            for (var i=0; i<entities.Count(); i++)
+            {
+                var entity = entities.ElementAt(i);
+                var propertyInfo = GetPropertyInfo<T>(keyColumn.PropertyName);
+                if (propertyInfo == null)
+                {
+                    throw new InvalidOperationException($"property '{keyColumn.PropertyName}' not found in type <{nameof(T)}>");
+                }
+
+                var (keyParameterName, keyParameter) = GetDbValueBase(dbCommand.CreateParameter, entity, i, keyColumn);
+                dbCommand.Parameters.Add(keyParameter);
+                
+                var valueStatement = new List<string>();
+                
+                for (var y = 0; y < writableColumns.Length; y++)
+                {
+                    var (placeholder, dbParameter) = GetDbValueBase(dbCommand.CreateParameter, entities.ElementAt(i), i, writableColumns[y]);
+                    
+                    valueStatement.Add(placeholder);
+                    dbCommand.Parameters.Add(dbParameter);
+                }
+                
+                updateStatements.Add($"UPDATE \"{mapBuilder.TableName}\" SET ({string.Join(", ", columnsName)}) = ({string.Join(", ", valueStatement)}) WHERE {keyColumn.ColumnName} = {keyParameterName};");
+            }
+
+            dbCommand.CommandText = $"BEGIN; {string.Join(", ", updateStatements)} COMMIT;";
+            
+            return dbCommand.ExecuteNonQuery();
         }
         
         protected override object GetPocoValue(Type propertyType, IDataRecord reader, int i)
