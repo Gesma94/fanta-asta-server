@@ -156,7 +156,13 @@ namespace Fluently.Providers
             
             return dbCommand.ExecuteNonQuery();
         }
-        
+
+        public override string GetTableName<T>()
+        {
+            return GetMapperOf<T>()?.TableName ??
+                   throw new InvalidOperationException($"cannot find mapper for type {nameof(T)}");
+        }
+
         protected override object GetPocoValue(Type propertyType, IDataRecord reader, int i)
         {
             if (reader.IsDBNull(i))

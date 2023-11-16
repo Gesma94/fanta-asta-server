@@ -47,6 +47,8 @@ namespace Fluently.Common
 
         public abstract int UpdateRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities);
         
+        public abstract string GetTableName<T>();
+
         protected abstract object GetPocoValue(Type propertyType, IDataRecord reader, int i);
 
         protected EntityMapper GetMapperOf<T>()

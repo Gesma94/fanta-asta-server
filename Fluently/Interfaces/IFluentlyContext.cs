@@ -17,5 +17,6 @@ namespace Fluently.Interfaces
         int DeleteRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities);
         int Update<T>(Func<IDbCommand> dbCommandFactory, T entity);
         int UpdateRange<T>(Func<IDbCommand> dbCommandFactory, IEnumerable<T> entities);
+        string GetTableName<T>();
     }
 }

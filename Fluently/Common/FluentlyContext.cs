@@ -56,5 +56,10 @@ namespace Fluently.Common
         {
             return _provider.UpdateRange(dbCommandFactory, entities);
         }
+
+        public string GetTableName<T>()
+        {
+            return _provider.GetTableName<T>();
+        }
     }
 }
