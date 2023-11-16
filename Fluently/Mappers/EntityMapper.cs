@@ -17,5 +17,10 @@ namespace Fluently.Mappers
         {
             return PropertyMappers.SingleOrDefault(x => x.ColumnName == columnName);
         }
+        
+        public PropertyMapper GetMapperByPropertyName(string propertyName)
+        {
+            return PropertyMappers.SingleOrDefault(x => x.PropertyName == propertyName);
+        }
     }
 }

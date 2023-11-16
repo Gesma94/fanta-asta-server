@@ -61,5 +61,10 @@ namespace Fluently.Common
         {
             return _provider.GetTableName<T>();
         }
+
+        public string GetColumnName<T>(string propertyName)
+        {          
+            return _provider.GetColumnName<T>(propertyName);
+        }
     }
 }

@@ -163,6 +163,11 @@ namespace Fluently.Providers
                    throw new InvalidOperationException($"cannot find mapper for type {nameof(T)}");
         }
 
+        public override string GetColumnName<T>(string propertyName)
+        {
+            return GetMapperOf<T>().GetMapperByPropertyName(propertyName).ColumnName;
+        }
+
         protected override object GetPocoValue(Type propertyType, IDataRecord reader, int i)
         {
             if (reader.IsDBNull(i))
