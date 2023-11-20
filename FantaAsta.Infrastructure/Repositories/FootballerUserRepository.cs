@@ -5,19 +5,20 @@ using FantaAsta.Application.Interfaces.Repositories;
 using FantaAsta.Domain.Models;
 using FantaAsta.Infrastructure.Common;
 using FantaAsta.Infrastructure.DbContexts;
-using Microsoft.EntityFrameworkCore;
+using Fluently.Interfaces;
 
 namespace FantaAsta.Infrastructure.Repositories;
 
 public class FootballerUserRepository : GenericRepository<FootballerUserEntity>, IFootballerUserRepository
 {
-    public FootballerUserRepository(PostgreSqlContext postgreSqlContext) : base(postgreSqlContext)
+    public FootballerUserRepository(PostgreSqlContext postgreSqlContext, IFluentlyContext fluentlyContext) : base(postgreSqlContext, fluentlyContext)
     {
     }
 
     public FootballerUserEntity GetByFootballerId(int footballerId)
     {
-        return PostgreSqlContext.FootballerUsers.AsNoTracking().FirstOrDefault(x => x.FootballerId.Equals(footballerId));
+        return FluentlyContext.Query<FootballerUserEntity>(PostgreSqlContext.CreateCommand)
+            .SingleOrDefault(x => x.FootballerId == footballerId);
     }
     
     

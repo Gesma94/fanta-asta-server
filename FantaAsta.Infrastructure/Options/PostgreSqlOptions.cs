@@ -13,7 +13,6 @@ public class PostgreSqlOptions
     public string Password { get; set; }
     public string Database { get; set; }
 
-
     public NpgsqlConnectionStringBuilder GetNpgsqlConnectionStringBuilder()
     {
         var npgsqlConnectionStringBuilder = new NpgsqlConnectionStringBuilder

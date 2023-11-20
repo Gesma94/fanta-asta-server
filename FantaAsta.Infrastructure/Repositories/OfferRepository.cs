@@ -5,19 +5,19 @@ using FantaAsta.Application.Interfaces.Repositories;
 using FantaAsta.Domain.Models;
 using FantaAsta.Infrastructure.Common;
 using FantaAsta.Infrastructure.DbContexts;
-using Microsoft.EntityFrameworkCore;
+using Fluently.Interfaces;
 
 namespace FantaAsta.Infrastructure.Repositories;
 
 public class OfferRepository : GenericRepository<OfferEntity>, IOfferRepository
 {
-    public OfferRepository(PostgreSqlContext postgreSqlContext) : base(postgreSqlContext)
+    public OfferRepository(PostgreSqlContext postgreSqlContext, IFluentlyContext fluentlyContext) : base(postgreSqlContext, fluentlyContext)
     {
     }
 
-    public IQueryable<OfferEntity> GetAllByBatchId(int batchId)
+    public IEnumerable<OfferEntity> GetAllByBatchId(int batchId)
     {
-        return PostgreSqlContext.Offers.AsNoTracking().Where(x => x.BatchId.Equals(batchId));
+        return FluentlyContext.Query<OfferEntity>(PostgreSqlContext.CreateCommand).Where(x => x.BatchId == batchId);
     }
 
     public OfferEntity GetPreviousOffer(int currentOfferId)
@@ -27,6 +27,7 @@ public class OfferRepository : GenericRepository<OfferEntity>, IOfferRepository
 
     public OfferEntity GetPreviousOffer(OfferEntity offerEntity)
     {
-        return PostgreSqlContext.Offers.AsNoTracking().FirstOrDefault(x => x.Id.Equals(offerEntity.PreviousOfferId));
+        return FluentlyContext.Query<OfferEntity>(PostgreSqlContext.CreateCommand)
+            .SingleOrDefault(x => x.Id == offerEntity.Id);
     }
 }

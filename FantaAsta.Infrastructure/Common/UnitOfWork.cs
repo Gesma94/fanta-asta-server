@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2023 - Gesma94
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
+using System.Data;
 using FantaAsta.Application.Interfaces.Common;
 using FantaAsta.Application.Interfaces.Repositories;
 using FantaAsta.Infrastructure.DbContexts;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace FantaAsta.Infrastructure.Common;
 
@@ -38,18 +38,24 @@ public class UnitOfWork : IUnitOfWork
     public IUserRecoveryGuidRepository UserRecoveryGuids { get; }
     public IUserRepository Users { get; }
 
-    public IDbContextTransaction BeginTransaction()
+    public IDbTransaction BeginTransaction()
     {
-        return _postgreSqlContext.Database.BeginTransaction();
+        return _postgreSqlContext.BeginTransaction();
     }
 
     public void RollbackTransaction()
     {
-        _postgreSqlContext.Database.RollbackTransaction();
+        _postgreSqlContext.Rollback();
     }
 
-    public int Commit()
+    public void Commit()
     {
-        return _postgreSqlContext.SaveChanges();
+        _postgreSqlContext.Commit();
+    }
+
+    public void Dispose()
+    {
+        _postgreSqlContext.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

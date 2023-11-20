@@ -2,23 +2,22 @@
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
 using FantaAsta.Domain.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Fluently.Builders;
+using Fluently.Interfaces;
 
 namespace FantaAsta.Infrastructure.Configurations;
 
-public class UserAuctionConfiguration : IEntityTypeConfiguration<UserAuctionEntity>
+public class UserAuctionConfiguration : IEntityConfigurator<UserAuctionEntity>
 {
-    public void Configure(EntityTypeBuilder<UserAuctionEntity> builder)
+    public void Configure(EntityMapBuilder<UserAuctionEntity> builder)
     {
         builder.ToTable("Users_Auctions");
         
         builder.HasKey(x => new { x.UserId, x.AuctionId });
-        
-        builder.Property(x => x.CreatedTime).HasColumnName("created_time");
-        builder.Property(x => x.LastModifiedTime).HasColumnName("last_modified_time");
-        builder.Property(x => x.AuctionId).HasColumnName("auction_id");
-        builder.Property(x => x.UserId).HasColumnName("user_id");
-        builder.Property(x => x.IsAdmin).HasColumnName("is_admin");
+        builder.HasProperty(x => x.CreatedTime).HasColumnName("created_time");
+        builder.HasProperty(x => x.LastModifiedTime).HasColumnName("last_modified_time");
+        builder.HasProperty(x => x.AuctionId).HasColumnName("auction_id");
+        builder.HasProperty(x => x.UserId).HasColumnName("user_id");
+        builder.HasProperty(x => x.IsAdmin).HasColumnName("is_admin");
     }
 }

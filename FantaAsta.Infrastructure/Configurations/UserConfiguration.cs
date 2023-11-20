@@ -2,25 +2,25 @@
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
 using FantaAsta.Domain.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Fluently.Builders;
+using Fluently.Interfaces;
 
 namespace FantaAsta.Infrastructure.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<UserEntity>
+public class UserConfiguration : IEntityConfigurator<UserEntity>
 {
-    public void Configure(EntityTypeBuilder<UserEntity> builder)
+    public void Configure(EntityMapBuilder<UserEntity> builder)
     {
         builder.ToTable("Users");
-        builder.HasKey(x => x.Id).HasName("id");
-
-        builder.Property(x => x.CreatedTime).HasColumnName("created_time");
-        builder.Property(x => x.LastModifiedTime).HasColumnName("last_modified_time");
-        builder.Property(x => x.Email).HasColumnName("email");
-        builder.Property(x => x.Username).HasColumnName("username");
-        builder.Property(x => x.Password).HasColumnName("password");
-        builder.Property(x => x.DateOfBirth).HasColumnName("date_of_birth");
-        builder.Property(x => x.City).HasColumnName("city");
-        builder.Property(x => x.FavouriteTeam).HasColumnName("favourite_team");
+        
+        builder.HasKey(x => x.Id).HasColumnName("id");
+        builder.HasProperty(x => x.CreatedTime).HasColumnName("created_time");
+        builder.HasProperty(x => x.LastModifiedTime).HasColumnName("last_modified_time");
+        builder.HasProperty(x => x.Email).HasColumnName("email");
+        builder.HasProperty(x => x.Username).HasColumnName("username");
+        builder.HasProperty(x => x.Password).HasColumnName("password");
+        builder.HasProperty(x => x.DateOfBirth).HasColumnName("date_of_birth");
+        builder.HasProperty(x => x.City).HasColumnName("city");
+        builder.HasProperty(x => x.FavouriteTeam).HasColumnName("favourite_team");
     }
 }

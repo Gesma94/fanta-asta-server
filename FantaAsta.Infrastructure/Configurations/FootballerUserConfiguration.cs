@@ -2,22 +2,21 @@
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
 using FantaAsta.Domain.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Fluently.Builders;
+using Fluently.Interfaces;
 
 namespace FantaAsta.Infrastructure.Configurations;
 
-public class FootballerUserConfiguration : IEntityTypeConfiguration<FootballerUserEntity>
+public class FootballerUserConfiguration : IEntityConfigurator<FootballerUserEntity>
 {
-    public void Configure(EntityTypeBuilder<FootballerUserEntity> builder)
+    public void Configure(EntityMapBuilder<FootballerUserEntity> builder)
     {
         builder.ToTable("Footballers_Users");
         
-        builder.HasKey(x => x.Id).HasName("id");
-
-        builder.Property(x => x.CreatedTime).HasColumnName("created_time");
-        builder.Property(x => x.LastModifiedTime).HasColumnName("last_modified_time");
-        builder.Property(x => x.FootballerId).HasColumnName("footballer_id");
-        builder.Property(x => x.UserId).HasColumnName("user_id");
+        builder.HasKey(x => x.Id).HasColumnName("id");
+        builder.HasProperty(x => x.CreatedTime).HasColumnName("created_time");
+        builder.HasProperty(x => x.LastModifiedTime).HasColumnName("last_modified_time");
+        builder.HasProperty(x => x.FootballerId).HasColumnName("footballer_id");
+        builder.HasProperty(x => x.UserId).HasColumnName("user_id");
     }
 }

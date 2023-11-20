@@ -5,18 +5,19 @@ using FantaAsta.Application.Interfaces.Repositories;
 using FantaAsta.Domain.Models;
 using FantaAsta.Infrastructure.Common;
 using FantaAsta.Infrastructure.DbContexts;
-using Microsoft.EntityFrameworkCore;
+using Fluently.Interfaces;
 
 namespace FantaAsta.Infrastructure.Repositories;
 
 public class AuctionRepository : GenericRepository<AuctionEntity>, IAuctionRepository 
 {
-    public AuctionRepository(PostgreSqlContext postgreSqlContext) : base(postgreSqlContext)
+    public AuctionRepository(PostgreSqlContext postgreSqlContext, IFluentlyContext fluentlyContext) : base(postgreSqlContext, fluentlyContext)
     {
     }
 
     public AuctionEntity GetByName(string auctionName)
     {
-        return PostgreSqlContext.Auctions.AsNoTracking().FirstOrDefault(x => x.Name.Equals(auctionName));
+        return FluentlyContext.Query<AuctionEntity>(PostgreSqlContext.CreateCommand)
+            .SingleOrDefault(x => x.Name == auctionName);
     }
 }
