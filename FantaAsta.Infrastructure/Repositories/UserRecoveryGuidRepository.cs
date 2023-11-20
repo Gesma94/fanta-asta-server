@@ -6,7 +6,6 @@ using FantaAsta.Domain.Models;
 using FantaAsta.Infrastructure.Common;
 using FantaAsta.Infrastructure.DbContexts;
 using Fluently.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace FantaAsta.Infrastructure.Repositories;
 
