@@ -3,7 +3,6 @@
 
 using System.Data;
 using FantaAsta.Application.Interfaces.Repositories;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace FantaAsta.Application.Interfaces.Common;
 

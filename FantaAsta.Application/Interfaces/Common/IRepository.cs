@@ -2,7 +2,6 @@
 // This code is licensed under CC BY-NC-ND 4.0 license (see LICENSE for details)
 
 using FantaAsta.Domain.Common;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FantaAsta.Application.Interfaces.Common;
 
