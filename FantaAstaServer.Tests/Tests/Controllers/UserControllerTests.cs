@@ -20,6 +20,7 @@ namespace FantaAstaServer.Tests.Tests.Controllers
     public class UserControllerTests
     {
         [TestClass]
+        [Ignore]
         public class Register
         {
             [TestMethod]

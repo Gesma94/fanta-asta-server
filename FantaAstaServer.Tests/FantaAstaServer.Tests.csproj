@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
 	<IsPackable>false</IsPackable>
+	<UserSecretsId>65e3172d-ce16-4fe2-a3f5-9f489cc8eb5f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FantaAsta.Infrastructure\FantaAsta.Infrastructure.csproj" />
     <ProjectReference Include="..\FantaAstaServer\FantaAstaServer.csproj" />
+    <ProjectReference Include="..\Fluently\Fluently.csproj" />
   </ItemGroup>
 
   <ItemGroup>
